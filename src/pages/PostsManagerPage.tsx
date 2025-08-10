@@ -25,7 +25,7 @@ import {
   TableHeader,
   TableRow,
   Textarea,
-} from "../components"
+} from "@/components"
 
 type Address = { address?: string; city?: string; state?: string }
 type Comment = { body: string; id: number; likes: number; postId: number; user: { username: string } }
