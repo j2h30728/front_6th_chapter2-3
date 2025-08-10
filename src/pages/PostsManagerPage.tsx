@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
 import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
   Button,
@@ -60,34 +60,58 @@ const PostsManager = () => {
   // 상태 관리
   const [posts, setPosts] = useState<Post[]>([])
   const [total, setTotal] = useState<number>(0)
-  const [skip, setSkip] = useState(parseInt(queryParams.get("skip") || "0"))
-  const [limit, setLimit] = useState(parseInt(queryParams.get("limit") || "10"))
-  const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "")
+
+  // 필터 상태
+  const [skip, setSkip] = useState(parseInt(queryParams.get("skip") || "0")) // 건너 뛸 게시물 수
+  const [limit, setLimit] = useState(parseInt(queryParams.get("limit") || "10")) // 페이지당 게시물 수
+  const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "") // 검색어
+  const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "") // 정렬 기준
+  const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc") // 오름 차순 또는 내림 차순
+
+  // 선택된 게시물 상태
   const [selectedPost, setSelectedPost] = useState<Post | null>(null)
-  const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "")
-  const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc")
+
+  // 모달 상태
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
+
+  // 새 게시물 상태
   const [newPost, setNewPost] = useState<{ title: string; body: string; userId: number }>({
     title: "",
     body: "",
     userId: 1,
   })
+
+  // 로딩 상태
   const [loading, setLoading] = useState<boolean>(false)
+
+  // 태그 상태
   const [tags, setTags] = useState<Tag[]>([])
+
+  // 선택된 태그 상태
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
+
+  // 댓글 상태
   const [comments, setComments] = useState<Record<number, Comment[]>>({})
+
+  // 선택된 댓글 상태
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null)
+
+  // 코멘트 모달 새 댓글 상태
   const [newComment, setNewComment] = useState<{ body: string; postId: number | null; userId: number }>({
     body: "",
     postId: null,
     userId: 1,
   })
-  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false)
-  const [showEditCommentDialog, setShowEditCommentDialog] = useState(false)
-  const [showPostDetailDialog, setShowPostDetailDialog] = useState(false)
-  const [showUserModal, setShowUserModal] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+
+  // 코멘트 모달 내부 상태
+  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false) // 댓글 추가 모달 상태
+  const [showEditCommentDialog, setShowEditCommentDialog] = useState(false) // 댓글 수정 모달 상태
+
+  // 모달 상태
+  const [showPostDetailDialog, setShowPostDetailDialog] = useState(false) // 게시물 상세 보기 모달 상태
+  const [showUserModal, setShowUserModal] = useState(false) // 사용자 정보 모달 상태
+  const [selectedUser, setSelectedUser] = useState<User | null>(null) // 선택된 사용자 상태 (모달 정보)
 
   // URL 업데이트 함수
   const updateURL = () => {
@@ -107,14 +131,15 @@ const PostsManager = () => {
     let postsData: { posts: Post[]; total: number }
     let usersData: Array<Pick<User, "id" | "username" | "image">>
 
-    fetch(`/api/posts?limit=${limit}&skip=${skip}`)
+    fetch(`/api/posts?limit=${limit}&skip=${skip}`) // 게시물 목록
       .then((response) => response.json())
       .then((data: { posts: Post[]; total: number }) => {
         postsData = data
-        return fetch("/api/users?limit=0&select=username,image")
+        return fetch("/api/users?limit=0&select=username,image") // 사용자 목록
       })
       .then((response) => response.json())
       .then((users: { users: Array<Pick<User, "id" | "username" | "image">> }) => {
+        // 포맷팅
         usersData = users.users
         const postsWithUsers = postsData.posts.map((post: Post) => ({
           ...post,
