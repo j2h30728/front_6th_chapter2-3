@@ -1,3 +1,5 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { http, HttpResponse } from "msw"
 
 // 간단한 메모리 상태 - 각 테스트에서 setup에서 재설정 가능
