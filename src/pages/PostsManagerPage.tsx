@@ -1,6 +1,7 @@
 import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
+
 import {
   Button,
   Card,
@@ -26,31 +27,31 @@ import {
   Textarea,
 } from "../components"
 
-// Types
-type Reaction = { likes: number; dislikes: number }
-type UserSummary = { id: number; username?: string; image?: string }
 type Address = { address?: string; city?: string; state?: string }
+type Comment = { body: string; id: number; likes: number; postId: number; user: { username: string } }
 type Company = { name?: string; title?: string }
+type Post = {
+  author?: UserSummary
+  body: string
+  id: number
+  reactions?: Reaction
+  tags?: string[]
+  title: string
+  userId: number
+}
+// Types
+type Reaction = { dislikes: number; likes: number }
+type Tag = { slug: string; url: string }
 type User = UserSummary & {
+  address?: Address
+  age?: number
+  company?: Company
+  email?: string
   firstName?: string
   lastName?: string
-  age?: number
-  email?: string
   phone?: string
-  address?: Address
-  company?: Company
 }
-type Post = {
-  id: number
-  title: string
-  body: string
-  userId: number
-  tags?: string[]
-  reactions?: Reaction
-  author?: UserSummary
-}
-type Comment = { id: number; postId: number; body: string; user: { username: string }; likes: number }
-type Tag = { slug: string; url: string }
+type UserSummary = { id: number; image?: string; username?: string }
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -69,16 +70,16 @@ const PostsManager = () => {
   const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc") // 오름 차순 또는 내림 차순
 
   // 선택된 게시물 상태
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null)
+  const [selectedPost, setSelectedPost] = useState<null | Post>(null)
 
   // 모달 상태
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
 
   // 새 게시물 상태
-  const [newPost, setNewPost] = useState<{ title: string; body: string; userId: number }>({
-    title: "",
+  const [newPost, setNewPost] = useState<{ body: string; title: string; userId: number }>({
     body: "",
+    title: "",
     userId: 1,
   })
 
@@ -98,7 +99,7 @@ const PostsManager = () => {
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null)
 
   // 코멘트 모달 새 댓글 상태
-  const [newComment, setNewComment] = useState<{ body: string; postId: number | null; userId: number }>({
+  const [newComment, setNewComment] = useState<{ body: string; postId: null | number; userId: number }>({
     body: "",
     postId: null,
     userId: 1,
@@ -111,7 +112,7 @@ const PostsManager = () => {
   // 모달 상태
   const [showPostDetailDialog, setShowPostDetailDialog] = useState(false) // 게시물 상세 보기 모달 상태
   const [showUserModal, setShowUserModal] = useState(false) // 사용자 정보 모달 상태
-  const [selectedUser, setSelectedUser] = useState<User | null>(null) // 선택된 사용자 상태 (모달 정보)
+  const [selectedUser, setSelectedUser] = useState<null | User>(null) // 선택된 사용자 상태 (모달 정보)
 
   // URL 업데이트 함수
   const updateURL = () => {
@@ -129,7 +130,7 @@ const PostsManager = () => {
   const fetchPosts = () => {
     setLoading(true)
     let postsData: { posts: Post[]; total: number }
-    let usersData: Array<Pick<User, "id" | "username" | "image">>
+    let usersData: Array<Pick<User, "id" | "image" | "username">>
 
     fetch(`/api/posts?limit=${limit}&skip=${skip}`) // 게시물 목록
       .then((response) => response.json())
@@ -138,7 +139,7 @@ const PostsManager = () => {
         return fetch("/api/users?limit=0&select=username,image") // 사용자 목록
       })
       .then((response) => response.json())
-      .then((users: { users: Array<Pick<User, "id" | "username" | "image">> }) => {
+      .then((users: { users: Array<Pick<User, "id" | "image" | "username">> }) => {
         // 포맷팅
         usersData = users.users
         const postsWithUsers = postsData.posts.map((post: Post) => ({
@@ -198,7 +199,7 @@ const PostsManager = () => {
         fetch("/api/users?limit=0&select=username,image"),
       ])
       const postsData: { posts: Post[]; total: number } = await postsResponse.json()
-      const usersData: { users: Array<Pick<User, "id" | "username" | "image">> } = await usersResponse.json()
+      const usersData: { users: Array<Pick<User, "id" | "image" | "username">> } = await usersResponse.json()
 
       const postsWithUsers = postsData.posts.map((post: Post) => ({
         ...post,
@@ -217,14 +218,14 @@ const PostsManager = () => {
   const addPost = async () => {
     try {
       const response = await fetch("/api/posts/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newPost),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
       })
       const data: Post = await response.json()
       setPosts([data, ...posts])
       setShowAddDialog(false)
-      setNewPost({ title: "", body: "", userId: 1 })
+      setNewPost({ body: "", title: "", userId: 1 })
     } catch (error) {
       console.error("게시물 추가 오류:", error)
     }
@@ -235,9 +236,9 @@ const PostsManager = () => {
     if (!selectedPost) return
     try {
       const response = await fetch(`/api/posts/${selectedPost.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedPost),
+        headers: { "Content-Type": "application/json" },
+        method: "PUT",
       })
       const data: Post = await response.json()
       setPosts(posts.map((post) => (post.id === data.id ? data : post)))
@@ -275,9 +276,9 @@ const PostsManager = () => {
   const addComment = async () => {
     try {
       const response = await fetch("/api/comments/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newComment),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
       })
       const data: Comment = await response.json()
       setComments((prev) => ({
@@ -296,9 +297,9 @@ const PostsManager = () => {
     if (!selectedComment) return
     try {
       const response = await fetch(`/api/comments/${selectedComment.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ body: selectedComment.body }),
+        headers: { "Content-Type": "application/json" },
+        method: "PUT",
       })
       const data: Comment = await response.json()
       setComments((prev) => ({
@@ -331,9 +332,9 @@ const PostsManager = () => {
     try {
       const currentLikes = comments[postId]?.find((c) => c.id === id)?.likes ?? 0
       const response = await fetch(`/api/comments/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ likes: currentLikes + 1 }),
+        headers: { "Content-Type": "application/json" },
+        method: "PATCH",
       })
       const data: Comment = await response.json()
       setComments((prev) => ({
@@ -427,12 +428,12 @@ const PostsManager = () => {
                 <div className="flex flex-wrap gap-1">
                   {post.tags?.map((tag: string) => (
                     <span
-                      key={tag}
                       className={`px-1 text-[9px] font-semibold rounded-[4px] cursor-pointer ${
                         selectedTag === tag
                           ? "text-white bg-blue-500 hover:bg-blue-600"
                           : "text-blue-800 bg-blue-100 hover:bg-blue-200"
                       }`}
+                      key={tag}
                       onClick={() => {
                         setSelectedTag(tag)
                         updateURL()
@@ -449,7 +450,7 @@ const PostsManager = () => {
                 className="flex items-center space-x-2 cursor-pointer"
                 onClick={() => post.author && openUserModal(post.author)}
               >
-                <img src={post.author?.image} alt={post.author?.username} className="w-8 h-8 rounded-full" />
+                <img alt={post.author?.username} className="w-8 h-8 rounded-full" src={post.author?.image} />
                 <span>{post.author?.username}</span>
               </div>
             </TableCell>
@@ -463,21 +464,21 @@ const PostsManager = () => {
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-2">
-                <Button aria-label="댓글 보기" variant="ghost" size="sm" onClick={() => openPostDetail(post)}>
+                <Button aria-label="댓글 보기" onClick={() => openPostDetail(post)} size="sm" variant="ghost">
                   <MessageSquare className="w-4 h-4" />
                 </Button>
                 <Button
                   aria-label="게시물 수정"
-                  variant="ghost"
-                  size="sm"
                   onClick={() => {
                     setSelectedPost(post)
                     setShowEditDialog(true)
                   }}
+                  size="sm"
+                  variant="ghost"
                 >
                   <Edit2 className="w-4 h-4" />
                 </Button>
-                <Button aria-label="게시물 삭제" variant="ghost" size="sm" onClick={() => deletePost(post.id)}>
+                <Button aria-label="게시물 삭제" onClick={() => deletePost(post.id)} size="sm" variant="ghost">
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
@@ -494,11 +495,11 @@ const PostsManager = () => {
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold">댓글</h3>
         <Button
-          size="sm"
           onClick={() => {
             setNewComment((prev) => ({ ...prev, postId }))
             setShowAddCommentDialog(true)
           }}
+          size="sm"
         >
           <Plus className="w-3 h-3 mr-1" />
           댓글 추가
@@ -506,7 +507,7 @@ const PostsManager = () => {
       </div>
       <div className="space-y-1">
         {comments[postId]?.map((comment) => (
-          <div key={comment.id} className="flex items-center justify-between text-sm border-b pb-1">
+          <div className="flex items-center justify-between text-sm border-b pb-1" key={comment.id}>
             <div className="flex items-center space-x-2 overflow-hidden">
               <span className="font-medium truncate">{comment.user.username}:</span>
               <span className="truncate">{highlightText(comment.body, searchQuery)}</span>
@@ -514,29 +515,29 @@ const PostsManager = () => {
             <div className="flex items-center space-x-1">
               <Button
                 aria-label="댓글 좋아요"
-                variant="ghost"
-                size="sm"
                 onClick={() => likeComment(comment.id, postId)}
+                size="sm"
+                variant="ghost"
               >
                 <ThumbsUp className="w-3 h-3" />
                 <span className="ml-1 text-xs">{comment.likes}</span>
               </Button>
               <Button
                 aria-label="댓글 수정"
-                variant="ghost"
-                size="sm"
                 onClick={() => {
                   setSelectedComment(comment)
                   setShowEditCommentDialog(true)
                 }}
+                size="sm"
+                variant="ghost"
               >
                 <Edit2 className="w-3 h-3" />
               </Button>
               <Button
                 aria-label="댓글 삭제"
-                variant="ghost"
-                size="sm"
                 onClick={() => deleteComment(comment.id, postId)}
+                size="sm"
+                variant="ghost"
               >
                 <Trash2 className="w-3 h-3" />
               </Button>
@@ -566,22 +567,22 @@ const PostsManager = () => {
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="게시물 검색..."
                   aria-label="게시물 검색"
                   className="pl-8"
-                  value={searchQuery}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                   onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && searchPosts()}
+                  placeholder="게시물 검색..."
+                  value={searchQuery}
                 />
               </div>
             </div>
             <Select
-              value={selectedTag}
               onValueChange={(value) => {
                 setSelectedTag(value)
                 fetchPostsByTag(value)
                 updateURL()
               }}
+              value={selectedTag}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="태그 선택" />
@@ -595,7 +596,7 @@ const PostsManager = () => {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={sortBy} onValueChange={setSortBy}>
+            <Select onValueChange={setSortBy} value={sortBy}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="정렬 기준" />
               </SelectTrigger>
@@ -606,7 +607,7 @@ const PostsManager = () => {
                 <SelectItem value="reactions">반응</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={sortOrder} onValueChange={setSortOrder}>
+            <Select onValueChange={setSortOrder} value={sortOrder}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="정렬 순서" />
               </SelectTrigger>
@@ -624,7 +625,7 @@ const PostsManager = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <span>표시</span>
-              <Select value={limit.toString()} onValueChange={(value) => setLimit(Number(value))}>
+              <Select onValueChange={(value) => setLimit(Number(value))} value={limit.toString()}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="10" />
                 </SelectTrigger>
@@ -649,30 +650,30 @@ const PostsManager = () => {
       </CardContent>
 
       {/* 게시물 추가 대화상자 */}
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+      <Dialog onOpenChange={setShowAddDialog} open={showAddDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>새 게시물 추가</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <Input
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPost({ ...newPost, title: e.target.value })}
               placeholder="제목"
               value={newPost.title}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPost({ ...newPost, title: e.target.value })}
             />
             <Textarea
-              rows={30}
-              placeholder="내용"
-              value={newPost.body}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewPost({ ...newPost, body: e.target.value })}
+              placeholder="내용"
+              rows={30}
+              value={newPost.body}
             />
             <Input
-              type="number"
-              placeholder="사용자 ID"
-              value={newPost.userId}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setNewPost({ ...newPost, userId: Number(e.target.value) })
               }
+              placeholder="사용자 ID"
+              type="number"
+              value={newPost.userId}
             />
             <Button onClick={addPost}>게시물 추가</Button>
           </div>
@@ -680,26 +681,26 @@ const PostsManager = () => {
       </Dialog>
 
       {/* 게시물 수정 대화상자 */}
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+      <Dialog onOpenChange={setShowEditDialog} open={showEditDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>게시물 수정</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <Input
-              placeholder="제목"
-              value={selectedPost?.title || ""}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setSelectedPost((prev) => (prev ? { ...prev, title: e.target.value } : prev))
               }
+              placeholder="제목"
+              value={selectedPost?.title || ""}
             />
             <Textarea
-              rows={15}
-              placeholder="내용"
-              value={selectedPost?.body || ""}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                 setSelectedPost((prev) => (prev ? { ...prev, body: e.target.value } : prev))
               }
+              placeholder="내용"
+              rows={15}
+              value={selectedPost?.body || ""}
             />
             <Button onClick={updatePost}>게시물 업데이트</Button>
           </div>
@@ -707,18 +708,18 @@ const PostsManager = () => {
       </Dialog>
 
       {/* 댓글 추가 대화상자 */}
-      <Dialog open={showAddCommentDialog} onOpenChange={setShowAddCommentDialog}>
+      <Dialog onOpenChange={setShowAddCommentDialog} open={showAddCommentDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>새 댓글 추가</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <Textarea
-              placeholder="댓글 내용"
-              value={newComment.body}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                 setNewComment({ ...newComment, body: e.target.value })
               }
+              placeholder="댓글 내용"
+              value={newComment.body}
             />
             <Button onClick={addComment}>댓글 추가</Button>
           </div>
@@ -726,18 +727,18 @@ const PostsManager = () => {
       </Dialog>
 
       {/* 댓글 수정 대화상자 */}
-      <Dialog open={showEditCommentDialog} onOpenChange={setShowEditCommentDialog}>
+      <Dialog onOpenChange={setShowEditCommentDialog} open={showEditCommentDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>댓글 수정</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <Textarea
-              placeholder="댓글 내용"
-              value={selectedComment?.body || ""}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                 setSelectedComment((prev) => (prev ? { ...prev, body: e.target.value } : prev))
               }
+              placeholder="댓글 내용"
+              value={selectedComment?.body || ""}
             />
             <Button onClick={updateComment}>댓글 업데이트</Button>
           </div>
@@ -745,7 +746,7 @@ const PostsManager = () => {
       </Dialog>
 
       {/* 게시물 상세 보기 대화상자 */}
-      <Dialog open={showPostDetailDialog} onOpenChange={setShowPostDetailDialog}>
+      <Dialog onOpenChange={setShowPostDetailDialog} open={showPostDetailDialog}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>{highlightText(selectedPost?.title, searchQuery)}</DialogTitle>
@@ -758,13 +759,13 @@ const PostsManager = () => {
       </Dialog>
 
       {/* 사용자 모달 */}
-      <Dialog open={showUserModal} onOpenChange={setShowUserModal}>
+      <Dialog onOpenChange={setShowUserModal} open={showUserModal}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>사용자 정보</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <img src={selectedUser?.image} alt={selectedUser?.username} className="w-24 h-24 rounded-full mx-auto" />
+            <img alt={selectedUser?.username} className="w-24 h-24 rounded-full mx-auto" src={selectedUser?.image} />
             <h3 className="text-xl font-semibold text-center">{selectedUser?.username}</h3>
             <div className="space-y-2">
               <p>

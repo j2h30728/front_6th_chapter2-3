@@ -18,7 +18,6 @@ export default tseslint.config(
     plugins: {
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
-      "perfectionist": perfectionist,
     },
     rules: {
       // ... 기존 규칙들
@@ -27,9 +26,9 @@ export default tseslint.config(
       "perfectionist/sort-imports": [
         "error",
         {
-          "type": "natural",
-          "order": "asc",
-          "groups": [
+          type: "natural",
+          order: "asc",
+          groups: [
             "builtin",
             "external",
             "internal-type",
@@ -39,18 +38,18 @@ export default tseslint.config(
             "object",
             "unknown",
           ],
-          "custom-groups": {
+          customGroups: {
             value: {
-              "react": ["react", "react-*"],
-              "@app": "@/app/**",
-              "@pages": "@/pages/**",
-              "@widgets": "@/widgets/**",
-              "@features": "@/features/**",
-              "@entities": "@/entities/**",
-              "@shared": "@/shared/**",
+              "react": ["^react$", "^react-.+"],
+              "@app": "^@/app",
+              "@pages": "^@/pages",
+              "@widgets": "^@/widgets",
+              "@features": "^@/features",
+              "@entities": "^@/entities",
+              "@shared": "^@/shared",
             },
           },
-          "newlines-between": "always",
+          newlinesBetween: "always",
         },
       ],
       "perfectionist/sort-named-imports": ["error", { type: "natural" }],

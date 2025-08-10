@@ -5,47 +5,47 @@ import { http, HttpResponse } from "msw"
 // 간단한 메모리 상태 - 각 테스트에서 setup에서 재설정 가능
 export const createDb = () => {
   const users = Array.from({ length: 5 }).map((_, i) => ({
-    id: i + 1,
-    username: `user${i + 1}`,
-    image: `https://picsum.photos/seed/u${i + 1}/64/64`,
-    firstName: `First${i + 1}`,
-    lastName: `Last${i + 1}`,
-    age: 20 + i,
-    email: `user${i + 1}@example.com`,
-    phone: `010-0000-00${i + 1}`,
     address: { address: `Addr ${i + 1}`, city: "Seoul", state: "KR" },
+    age: 20 + i,
     company: { name: "ACME", title: "Engineer" },
+    email: `user${i + 1}@example.com`,
+    firstName: `First${i + 1}`,
+    id: i + 1,
+    image: `https://picsum.photos/seed/u${i + 1}/64/64`,
+    lastName: `Last${i + 1}`,
+    phone: `010-0000-00${i + 1}`,
+    username: `user${i + 1}`,
   }))
 
   let posts = Array.from({ length: 25 }).map((_, i) => ({
-    id: i + 1,
-    title: `Post ${i + 1}`,
     body: `Post body ${i + 1}`,
-    userId: (i % users.length) + 1,
+    id: i + 1,
+    reactions: { dislikes: Math.floor(i / 3), likes: i },
     tags: ["tag-a", i % 2 === 0 ? "tag-b" : "tag-c"],
-    reactions: { likes: i, dislikes: Math.floor(i / 3) },
+    title: `Post ${i + 1}`,
+    userId: (i % users.length) + 1,
   }))
 
   const commentsByPost: Record<
     number,
-    Array<{ id: number; postId: number; body: string; user: { username: string }; likes: number }>
+    Array<{ body: string; id: number; likes: number; postId: number; user: { username: string } }>
   > = {}
   let nextCommentId = 1
 
   const ensureComments = (postId: number) => {
     if (!commentsByPost[postId]) {
       commentsByPost[postId] = Array.from({ length: 2 }).map((_, i) => ({
-        id: nextCommentId++,
-        postId,
         body: `Comment ${i + 1} for post ${postId}`,
-        user: { username: users[(postId + i) % users.length].username },
+        id: nextCommentId++,
         likes: 0,
+        postId,
+        user: { username: users[(postId + i) % users.length].username },
       }))
     }
     return commentsByPost[postId]
   }
 
-  return { users, posts, commentsByPost, ensureComments }
+  return { commentsByPost, ensureComments, posts, users }
 }
 
 export const buildHandlers = (db = createDb()) => [
@@ -55,7 +55,7 @@ export const buildHandlers = (db = createDb()) => [
     const limit = Number(url.searchParams.get("limit") ?? 10)
     const skip = Number(url.searchParams.get("skip") ?? 0)
     const slice = db.posts.slice(skip, skip + limit)
-    return HttpResponse.json({ posts: slice, total: db.posts.length, skip, limit })
+    return HttpResponse.json({ limit, posts: slice, skip, total: db.posts.length })
   }),
 
   http.get("/api/posts/tags", () => {
@@ -78,7 +78,7 @@ export const buildHandlers = (db = createDb()) => [
 
   http.post("/api/posts/add", async ({ request }) => {
     const body = (await request.json()) as any
-    const newPost = { id: db.posts.length + 1, reactions: { likes: 0, dislikes: 0 }, tags: [], ...body }
+    const newPost = { id: db.posts.length + 1, reactions: { dislikes: 0, likes: 0 }, tags: [], ...body }
     db.posts = [newPost, ...db.posts]
     return HttpResponse.json(newPost)
   }),
@@ -130,11 +130,11 @@ export const buildHandlers = (db = createDb()) => [
     const { body, postId } = (await request.json()) as any
     const comments = db.ensureComments(postId)
     const newComment = {
-      id: comments.length ? Math.max(...comments.map((c) => c.id)) + 1 : 1,
-      postId,
       body,
-      user: { username: "me" },
+      id: comments.length ? Math.max(...comments.map((c) => c.id)) + 1 : 1,
       likes: 0,
+      postId,
+      user: { username: "me" },
     }
     comments.push(newComment)
     return HttpResponse.json(newComment)
