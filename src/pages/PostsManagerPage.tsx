@@ -26,6 +26,7 @@ import {
   TableRow,
   Textarea,
 } from "@/components"
+import { fetchUsersSummary } from "@/feature/fetch-users-summary"
 
 type Address = { address?: string; city?: string; state?: string }
 type Comment = { body: string; id: number; likes: number; postId: number; user: { username: string } }
@@ -136,12 +137,12 @@ const PostsManager = () => {
       .then((response) => response.json())
       .then((data: { posts: Post[]; total: number }) => {
         postsData = data
-        return fetch("/api/users?limit=0&select=username,image") // 사용자 목록
+        return fetchUsersSummary() // 사용자 목록
       })
-      .then((response) => response.json())
-      .then((users: { users: Array<Pick<User, "id" | "image" | "username">> }) => {
+      .then((users) => {
         // 포맷팅
-        usersData = users.users
+        console.log(users)
+        usersData = users
         const postsWithUsers = postsData.posts.map((post: Post) => ({
           ...post,
           author: usersData.find((user) => user.id === post.userId),
