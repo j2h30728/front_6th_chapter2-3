@@ -12,19 +12,15 @@ export interface PostQuery {
 
 export const PostApi = {
   async create(post: Pick<Post, "body" | "title" | "userId">) {
-    const result = await apiClient.post("/posts/add", post)
-    return result.data
+    return apiClient.post("/posts/add", post)
   },
   async delete(postId: number) {
-    const result = await apiClient.delete(`/posts/${postId}`)
-    return result.data
+    return apiClient.delete(`/posts/${postId}`)
   },
   async fetchAll(params: PostQuery) {
-    const result = await apiClient.get<Post[]>("/posts", { params })
-    return result.data
+    return apiClient.get<Post[]>("/posts", { params })
   },
   async update(post: Post) {
-    const result = await apiClient.put(`/posts/${post.id}`, post)
-    return result.data
+    return apiClient.put(`/posts/${post.id}`, post)
   },
 }

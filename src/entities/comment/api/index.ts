@@ -4,19 +4,15 @@ import { Comment } from "../model/types"
 
 export const commentApi = {
   async create() {
-    const result = await apiClient.post("/comments/add")
-    return result.data
+    return apiClient.post("/comments/add")
   },
   async delete(commentId: number) {
-    const result = await apiClient.delete(`/comments/${commentId}`)
-    return result.data
+    return apiClient.delete(`/comments/${commentId}`)
   },
   async fetchById(postId: number) {
-    const result = await apiClient.get<Comment>(`/comments/post/${postId}`)
-    return result.data
+    return apiClient.get<Comment>(`/comments/post/${postId}`)
   },
   async update(comment: Comment) {
-    const result = await apiClient.put(`/comments/${comment.id}`)
-    return result.data
+    return apiClient.put(`/comments/${comment.id}`)
   },
 }
