@@ -1,5 +1,6 @@
 import { ReactNode } from "react"
 
+import { QueryProvider } from "./QueryProvider"
 import { RouterProvider } from "./RouterProvider"
 
 interface AppProvidersProps {
@@ -7,5 +8,9 @@ interface AppProvidersProps {
 }
 
 export const AppProvider = ({ children }: AppProvidersProps) => {
-  return <RouterProvider>{children}</RouterProvider>
+  return (
+    <RouterProvider>
+      <QueryProvider>{children}</QueryProvider>
+    </RouterProvider>
+  )
 }
