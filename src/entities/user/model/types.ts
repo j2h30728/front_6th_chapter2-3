@@ -1,4 +1,3 @@
-export type FetchUserParams = { limit: number; select: string }
 export type User = {
   address?: Address
   age?: number
@@ -11,6 +10,7 @@ export type User = {
   phone?: string
   username?: string
 }
+export type UserQueryParams = { limit: number; select: string }
 
 type Address = { address?: string; city?: string; state?: string }
 

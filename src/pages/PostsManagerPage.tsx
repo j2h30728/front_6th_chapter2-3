@@ -7,7 +7,7 @@ import { postApi } from "@/entities/post"
 import { TagApi } from "@/entities/tag"
 import { userApi } from "@/entities/user"
 import { commentLikeApi } from "@/feature/comment-like"
-import { fetchUsersSummary } from "@/feature/fetch-users-summary"
+import { getUsersSummary } from "@/feature/get-users-summary"
 import { highlightText } from "@/shared/lib"
 import {
   Button,
@@ -138,16 +138,14 @@ const PostsManager = () => {
     setLoading(true)
     let postsData: { posts: Post[]; total: number }
     let usersData: Array<Pick<User, "id" | "image" | "username">>
-
     fetch(`/api/posts?limit=${limit}&skip=${skip}`) // 게시물 목록
       .then((response) => response.json())
       .then((data: { posts: Post[]; total: number }) => {
         postsData = data
-        return fetchUsersSummary() // 사용자 목록
+        return getUsersSummary() // 사용자 목록
       })
       .then((users) => {
         // 포맷팅
-        console.log("user=====", users)
         usersData = users.users
         const postsWithUsers = postsData.posts.map((post: Post) => ({
           ...post,
@@ -167,7 +165,7 @@ const PostsManager = () => {
   // 태그 가져오기
   const fetchTags = async () => {
     try {
-      const data: Tag[] = await TagApi.fetchAll()
+      const data: Tag[] = await TagApi.getAll()
       setTags(data)
     } catch (error) {
       console.error("태그 가져오기 오류:", error)
@@ -200,7 +198,7 @@ const PostsManager = () => {
     }
     setLoading(true)
     try {
-      const [postsData, usersData] = await Promise.all([postApi.fetchAllByTag(tag), fetchUsersSummary()])
+      const [postsData, usersData] = await Promise.all([postApi.getAllByTag(tag), getUsersSummary()])
 
       const postsWithUsers = postsData.posts.map((post: Post) => ({
         ...post,
@@ -253,7 +251,7 @@ const PostsManager = () => {
   const fetchComments = async (postId: number) => {
     if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
     try {
-      const data = await commentApi.fetchByPostId(postId)
+      const data = await commentApi.getByPostId(postId)
       setComments((prev) => ({ ...prev, [postId]: data.comments }))
     } catch (error) {
       console.error("댓글 가져오기 오류:", error)
@@ -329,7 +327,7 @@ const PostsManager = () => {
   // 사용자 모달 열기
   const openUserModal = async (user: UserSummary) => {
     try {
-      const userData: User = await userApi.fetchById(user.id)
+      const userData: User = await userApi.getById(user.id)
       setSelectedUser(userData)
       setShowUserModal(true)
     } catch (error) {

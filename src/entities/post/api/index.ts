@@ -1,14 +1,6 @@
-import type { Post } from "@/entities/post/model/types"
+import type { Post, PostQueryParams } from "@/entities/post/model/types"
 
 import { apiClient } from "@/shared/api/apiClient"
-
-export interface PostQuery {
-  limit: number
-  search: string
-  skip: number
-  sortBy: "id" | "none" | "reactions" | "title"
-  sortOrder: "asc" | "desc"
-}
 
 export const postApi = {
   async create(post: Pick<Post, "body" | "title" | "userId">) {
@@ -17,10 +9,10 @@ export const postApi = {
   async delete(postId: number) {
     return apiClient.delete(`/posts/${postId}`)
   },
-  async fetchAll(params: PostQuery) {
+  async getAll(params: Partial<PostQueryParams>) {
     return apiClient.get<Post[]>("/posts", { params })
   },
-  async fetchAllByTag(tag: string) {
+  async getAllByTag(tag: string) {
     return apiClient.get<{ posts: Post[]; total: number }>(`/posts/tag/${tag}`)
   },
   async search(params: string) {

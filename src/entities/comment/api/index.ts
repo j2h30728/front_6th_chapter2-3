@@ -9,7 +9,7 @@ export const commentApi = {
   async delete(commentId: number) {
     return apiClient.delete(`/comments/${commentId}`)
   },
-  async fetchByPostId(postId: number) {
+  async getByPostId(postId: number) {
     return apiClient.get<{ comments: Comment[] }>(`/comments/post/${postId}`)
   },
   async update(comment: Pick<Comment, "body" | "id">) {
