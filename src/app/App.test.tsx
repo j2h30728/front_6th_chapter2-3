@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
-import App from "@/App"
+import App from "./App"
 
 // 통합 시나리오: 목록 로딩 → 태그 필터 → 검색 → 상세 댓글 로드/추가/수정/삭제/좋아요 → 게시물 추가/수정/삭제
 
