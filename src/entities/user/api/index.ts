@@ -4,7 +4,7 @@ import { FetchUserParams, User } from "../model/types"
 
 export const userApi = {
   async fetchAll(params: FetchUserParams) {
-    return apiClient.get<Array<User>>("/users", {
+    return apiClient.get<{ users: Array<User> }>("/users", {
       params,
     })
   },
