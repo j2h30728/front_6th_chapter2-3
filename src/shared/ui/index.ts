@@ -2,6 +2,8 @@ export * from "./Button"
 export * from "./Card"
 export * from "./Dialog"
 export * from "./Input"
+export * from "./layouts/MainLayout"
 export * from "./Select"
 export * from "./Table"
+
 export * from "./TextArea"
