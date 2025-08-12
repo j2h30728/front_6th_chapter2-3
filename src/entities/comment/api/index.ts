@@ -1,18 +1,21 @@
 import { apiClient } from "@/shared/api/apiClient"
 
-import { Comment } from "../model/types"
+import { Comment, CommentRequest } from "../model/types"
 
 export const commentApi = {
-  async create() {
-    return apiClient.post("/comments/add")
+  async create(newComment: CommentRequest) {
+    return apiClient.post<Comment>("/comments/add", newComment)
   },
   async delete(commentId: number) {
     return apiClient.delete(`/comments/${commentId}`)
   },
-  async fetchById(postId: number) {
-    return apiClient.get<Comment>(`/comments/post/${postId}`)
+  async fetchByPostId(postId: number) {
+    return apiClient.get<{ comments: Comment[] }>(`/comments/post/${postId}`)
   },
-  async update(comment: Comment) {
-    return apiClient.put(`/comments/${comment.id}`)
+  async update(comment: Pick<Comment, "body" | "id">) {
+    return apiClient.put<Comment>(`/comments/${comment.id}`, { body: comment.body })
+  },
+  async updateLike(comment: Pick<Comment, "id" | "likes">) {
+    return apiClient.patch<Comment>(`/comments/${comment.id}`, { likes: comment.likes })
   },
 }
