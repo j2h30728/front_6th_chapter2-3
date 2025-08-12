@@ -9,6 +9,7 @@ import { User, userApi } from "@/entities/user"
 import { commentLikeApi } from "@/feature/comment-like"
 import { getPosts } from "@/feature/get-posts"
 import { getUsersSummary, UserSummary } from "@/feature/get-users-summary"
+import { searchPostsByKeyword } from "@/feature/search-posts"
 import { highlightText } from "@/shared/lib"
 import {
   Button,
@@ -158,8 +159,7 @@ const PostsManager = () => {
     }
     setLoading(true)
     try {
-      const response = await fetch(`/api/posts/search?q=${searchQuery}`)
-      const data: { posts: Post[]; total: number } = await response.json()
+      const data: { posts: Post[]; total: number } = await searchPostsByKeyword(searchQuery)
       setPosts(data.posts)
       setTotal(data.total)
     } catch (error) {

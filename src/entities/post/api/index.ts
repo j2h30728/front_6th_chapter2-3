@@ -1,4 +1,4 @@
-import type { Post, PostQueryParams } from "@/entities/post/model/types"
+import type { Post, PostQueryParams, SearchQueryParams } from "@/entities/post/model/types"
 
 import { PaginationResponse } from "@/shared/api"
 import { apiClient } from "@/shared/api/apiClient"
@@ -16,8 +16,8 @@ export const postApi = {
   async getAllByTag(tag: string) {
     return apiClient.get<PaginationResponse<Post>>(`/posts/tag/${tag}`)
   },
-  async search(params: string) {
-    return apiClient.get("/posts/search", { params })
+  async search(params: SearchQueryParams) {
+    return apiClient.get<PaginationResponse<Post>>("/posts/search", { params })
   },
   async update(post: Post) {
     return apiClient.put<Post>(`/posts/${post.id}`, post)

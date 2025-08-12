@@ -15,4 +15,8 @@ export interface PostQueryParams {
   sortOrder: "asc" | "desc"
 }
 
+export interface SearchQueryParams {
+  q?: string
+}
+
 type Reaction = { dislikes: number; likes: number }
