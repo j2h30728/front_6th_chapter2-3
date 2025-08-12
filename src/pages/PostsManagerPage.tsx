@@ -7,6 +7,7 @@ import { postApi } from "@/entities/post"
 import { TagApi } from "@/entities/tag"
 import { userApi } from "@/entities/user"
 import { commentLikeApi } from "@/feature/comment-like"
+import { getPosts } from "@/feature/get-posts"
 import { getUsersSummary } from "@/feature/get-users-summary"
 import { highlightText } from "@/shared/lib"
 import {
@@ -138,8 +139,7 @@ const PostsManager = () => {
     setLoading(true)
     let postsData: { posts: Post[]; total: number }
     let usersData: Array<Pick<User, "id" | "image" | "username">>
-    fetch(`/api/posts?limit=${limit}&skip=${skip}`) // 게시물 목록
-      .then((response) => response.json())
+    getPosts({ limit, skip })
       .then((data: { posts: Post[]; total: number }) => {
         postsData = data
         return getUsersSummary() // 사용자 목록
