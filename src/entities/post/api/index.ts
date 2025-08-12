@@ -10,9 +10,9 @@ export interface PostQuery {
   sortOrder: "asc" | "desc"
 }
 
-export const PostApi = {
+export const postApi = {
   async create(post: Pick<Post, "body" | "title" | "userId">) {
-    return apiClient.post("/posts/add", post)
+    return apiClient.post<Post>("/posts/add", post)
   },
   async delete(postId: number) {
     return apiClient.delete(`/posts/${postId}`)
@@ -20,7 +20,13 @@ export const PostApi = {
   async fetchAll(params: PostQuery) {
     return apiClient.get<Post[]>("/posts", { params })
   },
+  async fetchAllByTag(tag: string) {
+    return apiClient.get<{ posts: Post[]; total: number }>(`/posts/tag/${tag}`)
+  },
+  async search(params: string) {
+    return apiClient.get("/posts/search", { params })
+  },
   async update(post: Post) {
-    return apiClient.put(`/posts/${post.id}`, post)
+    return apiClient.put<Post>(`/posts/${post.id}`, post)
   },
 }
