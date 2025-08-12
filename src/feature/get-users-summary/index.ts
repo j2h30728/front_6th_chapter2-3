@@ -1,2 +1,2 @@
-export { getUsersSummary } from "./api"
-export type { UserSummaryParams } from "./model/types"
+export * from "./api"
+export * from "./model/types"

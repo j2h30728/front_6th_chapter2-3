@@ -2,13 +2,13 @@ import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 
-import { commentApi } from "@/entities/comment"
-import { postApi } from "@/entities/post"
-import { TagApi } from "@/entities/tag"
-import { userApi } from "@/entities/user"
+import { Comment, commentApi } from "@/entities/comment"
+import { Post, postApi } from "@/entities/post"
+import { Tag, TagApi } from "@/entities/tag"
+import { User, userApi } from "@/entities/user"
 import { commentLikeApi } from "@/feature/comment-like"
 import { getPosts } from "@/feature/get-posts"
-import { getUsersSummary } from "@/feature/get-users-summary"
+import { getUsersSummary, UserSummary } from "@/feature/get-users-summary"
 import { highlightText } from "@/shared/lib"
 import {
   Button,
@@ -35,39 +35,17 @@ import {
   Textarea,
 } from "@/shared/ui"
 
-type Address = { address?: string; city?: string; state?: string }
-type Comment = { body: string; id: number; likes: number; postId: number; user: { username: string } }
-type Company = { name?: string; title?: string }
-type Post = {
-  author?: UserSummary
-  body: string
-  id: number
-  reactions?: Reaction
-  tags?: string[]
-  title: string
-  userId: number
-}
-// Types
-type Reaction = { dislikes: number; likes: number }
-type Tag = { slug: string; url: string }
-type User = UserSummary & {
-  address?: Address
-  age?: number
-  company?: Company
-  email?: string
-  firstName?: string
-  lastName?: string
-  phone?: string
-}
-type UserSummary = { id: number; image?: string; username?: string }
-
 const PostsManager = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
 
+  interface PostWithUserSummary extends Post {
+    author?: UserSummary
+  }
+
   // 상태 관리
-  const [posts, setPosts] = useState<Post[]>([])
+  const [posts, setPosts] = useState<PostWithUserSummary[]>([])
   const [total, setTotal] = useState<number>(0)
 
   // 필터 상태
@@ -371,7 +349,7 @@ const PostsManager = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {posts.map((post: Post) => (
+        {posts.map((post: PostWithUserSummary) => (
           <TableRow key={post.id}>
             <TableCell>{post.id}</TableCell>
             <TableCell>
