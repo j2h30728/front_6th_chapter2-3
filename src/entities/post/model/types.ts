@@ -11,7 +11,7 @@ export interface PostQueryParams {
   limit: number
   search: string
   skip: number
-  sortBy: "id" | "none" | "reactions" | "title"
+  sortBy: "" | "id" | "none" | "reactions" | "title"
   sortOrder: "asc" | "desc"
 }
 

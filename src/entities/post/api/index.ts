@@ -8,7 +8,7 @@ export const postApi = {
     return apiClient.post<Post>("/posts/add", post)
   },
   async delete(postId: number) {
-    return apiClient.delete(`/posts/${postId}`)
+    return apiClient.delete<Post>(`/posts/${postId}`)
   },
   async getAll(params: Partial<PostQueryParams>) {
     return apiClient.get<PaginationResponse<Post>>("/posts", { params })
