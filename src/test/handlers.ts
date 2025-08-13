@@ -93,8 +93,9 @@ export const buildHandlers = (db = createDb()) => [
 
   http.delete("/api/posts/:id", ({ params }) => {
     const id = Number(params.id)
+    const deletedPost = db.posts.find((p) => p.id === id)
     db.posts = db.posts.filter((p) => p.id !== id)
-    return HttpResponse.json({ success: true })
+    return HttpResponse.json(deletedPost) // 삭제된 게시물 객체 반환
   }),
 
   // users
