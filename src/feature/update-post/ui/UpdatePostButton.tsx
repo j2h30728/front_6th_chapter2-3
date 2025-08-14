@@ -7,15 +7,15 @@ import { Button } from "@/shared/ui"
 import { UpdatePostModal } from "./UpdatePostModal"
 
 export const UpdatePostButton = ({ post }: { post: Post }) => {
-  const editPostModal = useModal<Post>(`update-post-${post.id}`)
+  const updatePostModal = useModal<Post>(`update-post-${post.id}`)
 
-  const handleEditPost = (post: Post) => {
-    editPostModal.open(post)
+  const handleUpdatePost = (post: Post) => {
+    updatePostModal.open(post)
   }
 
   return (
     <>
-      <Button aria-label="게시물 수정" onClick={() => handleEditPost(post)} size="sm" variant="ghost">
+      <Button aria-label="게시물 수정" onClick={() => handleUpdatePost(post)} size="sm" variant="ghost">
         <Edit2 className="w-3 h-3" />
       </Button>
       <UpdatePostModal modalId={`update-post-${post.id}`} />

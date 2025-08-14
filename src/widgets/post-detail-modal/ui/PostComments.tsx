@@ -8,7 +8,7 @@ import { usePostsQuery } from "@/feature/post-query"
 import { highlightText } from "@/shared/lib"
 import { Button } from "@/shared/ui"
 import { AddCommentButton } from "@/widgets/add-comment-modal"
-import { UpdateCommentButton } from "@/widgets/edit-comment-modal"
+import { UpdateCommentButton } from "@/widgets/update-comment-modal"
 
 interface PostCommentsProps {
   postId: number
