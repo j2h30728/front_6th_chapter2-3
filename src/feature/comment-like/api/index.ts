@@ -11,7 +11,7 @@ export const useCommentLikeMutation = () => {
   return useMutation({
     mutationFn: (comment: Comment) => commentApi.updateLike(comment),
 
-    onError: (err, variables, context) => {
+    onError: (_err, variables, context) => {
       const typedContext = context as { previousComments?: Comment[] }
       if (typedContext.previousComments) {
         queryClient.setQueryData(["comments", variables.postId], typedContext.previousComments)
@@ -34,12 +34,5 @@ export const useCommentLikeMutation = () => {
       })
       return previousComments
     },
-
-    // 리페치 할경우 다시 롤백
-    // onSettled: (data, error, variables) => {
-    //   queryClient.invalidateQueries({
-    //     queryKey: ["comments", variables.postId],
-    //   })
-    // },
   })
 }
