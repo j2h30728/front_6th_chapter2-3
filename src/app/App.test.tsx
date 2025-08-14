@@ -74,13 +74,20 @@ describe("App - 댓글", () => {
     await userEvent.type(textarea, "great!")
     await userEvent.click(within(addDialog).getByRole("button", { name: "댓글 추가" }))
     expect(await within(dialog).findByText(/great!/)).toBeInTheDocument()
+
+    // 테스트 후 다이얼로그 닫기
+    const closeBtn = within(dialog).getByRole("button", { name: "닫기" })
+    await userEvent.click(closeBtn)
   })
 })
 
 describe("App - 게시물 CRUD", () => {
   test("게시물 추가/수정/삭제가 가능하다", async () => {
     renderApp()
-    await screen.findByText(/^Post 1$/)
+
+    // 게시물 목록이 로드될 때까지 대기 (중복 요소 처리)
+    const titleCells = await screen.findAllByText(/^Post 1$/)
+    expect(titleCells.length).toBeGreaterThan(0)
 
     // 추가
     await userEvent.click(screen.getByRole("button", { name: /게시물 추가/ }))
