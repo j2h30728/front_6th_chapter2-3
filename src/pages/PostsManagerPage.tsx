@@ -1,16 +1,20 @@
 import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
 import { useState } from "react"
 
-import { Comment, commentApi } from "@/entities/comment"
+import { Comment } from "@/entities/comment"
 import { Post, PostQueryParams } from "@/entities/post"
 import { Tag } from "@/entities/tag"
 import { User, userApi } from "@/entities/user"
+import { useAddCommentMutation } from "@/feature/add-comment"
 import { useAddPostMutation } from "@/feature/add-post"
 import { useCommentLikeMutation } from "@/feature/comment-like"
+import { useDeleteCommentMutation } from "@/feature/delete-comment"
 import { useDeletePostMutation } from "@/feature/delete-post"
 import { usePostsFilter } from "@/feature/filter-posts/model/usePostsFilter"
+import { useGetComments } from "@/feature/get-comments"
 import { useGetTags } from "@/feature/get-tags"
 import { UserSummary } from "@/feature/get-users-summary"
+import { useUpdateCommentMutation } from "@/feature/update-comment"
 import { useUpdatePostMutation } from "@/feature/update-post"
 import { highlightText } from "@/shared/lib"
 import {
@@ -47,7 +51,7 @@ export const PostsManagerPage = () => {
   }
 
   // 선택된 게시물 상태
-  const [selectedPost, setSelectedPost] = useState<null | Post>(null)
+  const [selectedPost, setSelectedPost] = useState<Post>()
 
   // 모달 상태
   const [showAddDialog, setShowAddDialog] = useState(false)
@@ -59,9 +63,6 @@ export const PostsManagerPage = () => {
     title: "",
     userId: 1,
   })
-
-  // 댓글 상태
-  const [comments, setComments] = useState<Record<number, Comment[]>>({})
 
   // 선택된 댓글 상태
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null)
@@ -130,71 +131,41 @@ export const PostsManagerPage = () => {
   }
 
   // 댓글 가져오기
-  const fetchComments = async (postId: number) => {
-    if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
-    try {
-      const data = await commentApi.getByPostId(postId)
-      setComments((prev) => ({ ...prev, [postId]: data.comments }))
-    } catch (error) {
-      console.error("댓글 가져오기 오류:", error)
-    }
-  }
+  const { data: comment } = useGetComments(selectedPost?.id)
 
   // 댓글 추가
-  const addComment = async () => {
-    try {
-      const data: Comment = await commentApi.create(newComment)
-      setComments((prev) => ({
-        ...prev,
-        [data.postId]: [...(prev[data.postId] || []), data],
-      }))
-      setShowAddCommentDialog(false)
-      setNewComment({ body: "", postId: null, userId: 1 })
-    } catch (error) {
-      console.error("댓글 추가 오류:", error)
-    }
-  }
+  const { mutate: addCommentMutate } = useAddCommentMutation()
 
+  const { mutate: updatedCommentMutate } = useUpdateCommentMutation()
   // 댓글 업데이트
   const updateComment = async () => {
-    if (!selectedComment) return
+    if (!selectedComment || !selectedPost) return
     try {
-      const data: Comment = await commentApi.update({ body: newComment.body, id: selectedComment.id })
-      setComments((prev) => ({
-        ...prev,
-        [data.postId]: prev[data.postId].map((comment) => (comment.id === data.id ? data : comment)),
-      }))
+      updatedCommentMutate({
+        ...selectedComment,
+        body: selectedComment.body,
+        postId: selectedPost.id,
+      })
       setShowEditCommentDialog(false)
     } catch (error) {
       console.error("댓글 업데이트 오류:", error)
     }
   }
 
+  const { mutate: deleteCommentMutate } = useDeleteCommentMutation()
   // 댓글 삭제
-  const deleteComment = async (id: number, postId: number) => {
+  const deleteComment = async (id: number) => {
     try {
-      await commentApi.delete(id)
-      setComments((prev) => ({
-        ...prev,
-        [postId]: (prev[postId] || []).filter((comment) => comment.id !== id),
-      }))
+      deleteCommentMutate(id)
     } catch (error) {
       console.error("댓글 삭제 오류:", error)
     }
   }
   const commentLikes = useCommentLikeMutation()
   // 댓글 좋아요
-  const likeComment = async (id: number, postId: number) => {
+  const likeComment = async (comment: Comment) => {
     try {
-      const currentLikes = comments[postId]?.find((c) => c.id === id)?.likes ?? 0
-      commentLikes.mutate({ id, likes: currentLikes, postId })
-
-      setComments((prev) => ({
-        ...prev,
-        [postId]: (prev[postId] || []).map((comment) =>
-          comment.id === commentLikes.data?.id ? { ...commentLikes.data, likes: comment.likes + 1 } : comment,
-        ),
-      }))
+      commentLikes.mutate(comment)
     } catch (error) {
       console.error("댓글 좋아요 오류:", error)
     }
@@ -203,7 +174,6 @@ export const PostsManagerPage = () => {
   // 게시물 상세 보기
   const openPostDetail = (post: Post) => {
     setSelectedPost(post)
-    fetchComments(post.id)
     setShowPostDetailDialog(true)
   }
 
@@ -217,7 +187,6 @@ export const PostsManagerPage = () => {
       console.error("사용자 정보 가져오기 오류:", error)
     }
   }
-
   // 게시물 테이블 렌더링
   const renderPostTable = () => (
     <Table>
@@ -318,19 +287,14 @@ export const PostsManagerPage = () => {
         </Button>
       </div>
       <div className="space-y-1">
-        {comments[postId]?.map((comment) => (
+        {comment?.comments?.map((comment) => (
           <div className="flex items-center justify-between text-sm border-b pb-1" key={comment.id}>
             <div className="flex items-center space-x-2 overflow-hidden">
               <span className="font-medium truncate">{comment.user.username}:</span>
               <span className="truncate">{highlightText(comment.body, current.search)}</span>
             </div>
             <div className="flex items-center space-x-1">
-              <Button
-                aria-label="댓글 좋아요"
-                onClick={() => likeComment(comment.id, postId)}
-                size="sm"
-                variant="ghost"
-              >
+              <Button aria-label="댓글 좋아요" onClick={() => likeComment(comment)} size="sm" variant="ghost">
                 <ThumbsUp className="w-3 h-3" />
                 <span className="ml-1 text-xs">{comment.likes}</span>
               </Button>
@@ -345,12 +309,7 @@ export const PostsManagerPage = () => {
               >
                 <Edit2 className="w-3 h-3" />
               </Button>
-              <Button
-                aria-label="댓글 삭제"
-                onClick={() => deleteComment(comment.id, postId)}
-                size="sm"
-                variant="ghost"
-              >
+              <Button aria-label="댓글 삭제" onClick={() => deleteComment(comment.id)} size="sm" variant="ghost">
                 <Trash2 className="w-3 h-3" />
               </Button>
             </div>
@@ -421,8 +380,8 @@ export const PostsManagerPage = () => {
               </SelectContent>
             </Select>
             <Select
-              onValueChange={(value) => updateQuery({ sortOrder: value as PostQueryParams["sortOrder"] })}
-              value={current.sortOrder}
+              onValueChange={(value) => updateQuery({ order: value as PostQueryParams["order"] })}
+              value={current.order}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="정렬 순서" />
@@ -548,7 +507,14 @@ export const PostsManagerPage = () => {
               placeholder="댓글 내용"
               value={newComment.body}
             />
-            <Button onClick={addComment}>댓글 추가</Button>
+            <Button
+              onClick={() => {
+                addCommentMutate(newComment)
+                setShowAddCommentDialog(false)
+              }}
+            >
+              댓글 추가
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
