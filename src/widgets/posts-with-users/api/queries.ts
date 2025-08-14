@@ -15,11 +15,11 @@ export const usePostsWithUserSummaryQuery = () => {
       const userData = await getUsersSummary()
 
       return {
+        ...postsData,
         posts: postsData.posts.map((post) => ({
           ...post,
           author: userData.users.find((user) => user.id === post.userId),
         })),
-        total: postsData.total,
       }
     },
     queryKey: ["posts-with-users", { limit, order, search, skip, sortBy, tag }],

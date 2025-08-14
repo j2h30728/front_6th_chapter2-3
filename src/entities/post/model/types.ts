@@ -7,6 +7,8 @@ export interface Post {
   userId: number
 }
 
+export type PostPagiantionReponse<T> = { limit: number; posts: T[]; skip: number; total: number }
+
 export interface PostQueryParams {
   limit: number
   order: "asc" | "desc"
@@ -14,8 +16,7 @@ export interface PostQueryParams {
   skip: number
   sortBy: "" | "id" | "none" | "reactions" | "title"
 }
-
-export type PostsResponse = { limit: number; posts: Post[]; skip: number; total: number }
+export type PostsResponse = PostPagiantionReponse<Post>
 
 export interface SearchQueryParams {
   q?: string

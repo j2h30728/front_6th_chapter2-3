@@ -44,6 +44,7 @@ import {
   Textarea,
 } from "@/shared/ui"
 import { usePostsWithUserSummaryQuery } from "@/widgets/posts-with-users"
+import { Pagination } from "@/widgets/posts-with-users/ui/Paginaition"
 
 export const PostsManagerPage = () => {
   const { current, updateQuery } = usePostsFilter()
@@ -176,12 +177,8 @@ export const PostsManagerPage = () => {
 
   // 사용자 모달 열기
   const openUserModal = async (user: UserSummary) => {
-    try {
-      setSelectedUser(user)
-      setShowUserModal(true)
-    } catch (error) {
-      console.error("사용자 정보 가져오기 오류:", error)
-    }
+    setSelectedUser(user)
+    setShowUserModal(true)
   }
   // 게시물 테이블 렌더링
   const renderPostTable = () => (
@@ -413,41 +410,7 @@ export const PostsManagerPage = () => {
           {isLoading ? <div className="flex justify-center p-4">로딩 중...</div> : renderPostTable()}
 
           {/* 페이지네이션 */}
-          {postsWithUsers && (
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <span>표시</span>
-                <Select
-                  onValueChange={(value) => updateQuery({ limit: Number(value) })}
-                  value={current.limit.toString()}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="10" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="30">30</SelectItem>
-                  </SelectContent>
-                </Select>
-                <span>항목</span>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  disabled={current.skip === 0}
-                  onClick={() => updateQuery({ skip: Math.max(0, current.skip - current.limit) })}
-                >
-                  이전
-                </Button>
-                <Button
-                  disabled={current.skip + current.limit >= postsWithUsers.total}
-                  onClick={() => updateQuery({ skip: current.skip + current.limit })}
-                >
-                  다음
-                </Button>
-              </div>
-            </div>
-          )}
+          {postsWithUsers && <Pagination postsWithUsers={postsWithUsers} />}
         </div>
       </CardContent>
 
