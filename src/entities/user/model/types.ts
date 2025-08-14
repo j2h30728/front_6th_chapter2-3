@@ -12,6 +12,8 @@ export type User = {
 }
 export type UserQueryParams = { limit: number; select: string }
 
+export type UsersResponse = { limit: number; skip: number; total: number; users: User[] }
+
 type Address = { address?: string; city?: string; state?: string }
 
 type Company = { name?: string; title?: string }

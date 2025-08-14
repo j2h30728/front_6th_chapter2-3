@@ -1,10 +1,10 @@
 import { apiClient } from "@/shared/api/apiClient"
 
-import { User, UserQueryParams } from "../model/types"
+import { User, UserQueryParams, UsersResponse } from "../model/types"
 
 export const userApi = {
   async getAll(params: UserQueryParams) {
-    return apiClient.get<{ users: Array<User> }>("/users", {
+    return apiClient.get<UsersResponse>("/users", {
       params,
     })
   },
