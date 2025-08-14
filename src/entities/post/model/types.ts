@@ -9,10 +9,10 @@ export interface Post {
 
 export interface PostQueryParams {
   limit: number
+  order: "asc" | "desc"
   search: string
   skip: number
   sortBy: "" | "id" | "none" | "reactions" | "title"
-  sortOrder: "asc" | "desc"
 }
 
 export interface SearchQueryParams {

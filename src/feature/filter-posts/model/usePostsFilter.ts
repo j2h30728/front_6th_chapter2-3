@@ -10,10 +10,10 @@ export const usePostsFilter = () => {
     () =>
       ({
         limit: parseInt(searchParams.get("limit") || "10"),
+        order: searchParams.get("order") || "asc",
         search: searchParams.get("search") || "",
         skip: parseInt(searchParams.get("skip") || "0"),
         sortBy: searchParams.get("sortBy") || "",
-        sortOrder: searchParams.get("sortOrder") || "asc",
         tag: searchParams.get("tag") || "",
       }) as PostQueryParams & { tag: string },
     [searchParams],

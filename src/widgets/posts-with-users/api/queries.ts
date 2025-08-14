@@ -6,7 +6,7 @@ import { getUsersSummary } from "@/feature/get-users-summary"
 
 export const usePostsWithUserSummaryQuery = () => {
   const { current, getChangedField } = usePostsFilter()
-  const { limit, search, skip, sortBy, sortOrder, tag } = current
+  const { limit, order, search, skip, sortBy, tag } = current
 
   return useQuery({
     queryFn: async () => {
@@ -22,6 +22,6 @@ export const usePostsWithUserSummaryQuery = () => {
         total: postsData.total,
       }
     },
-    queryKey: ["posts-with-users", { limit, search, skip, sortBy, sortOrder, tag }],
+    queryKey: ["posts-with-users", { limit, order, search, skip, sortBy, tag }],
   })
 }
