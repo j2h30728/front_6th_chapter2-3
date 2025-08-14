@@ -1,0 +1,65 @@
+import { useEffect, useState } from "react"
+
+import { useUpdatePostMutation } from "@/feature/update-post"
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "@/shared/ui"
+
+import { useEditPostModal } from "../model/useEditPostModal"
+
+export const EditPostModal = () => {
+  const { close, data: selectedPost, isOpen } = useEditPostModal()
+  const { mutate: updatePostMutate } = useUpdatePostMutation()
+
+  const [postData, setPostData] = useState({
+    body: "",
+    title: "",
+  })
+
+  useEffect(() => {
+    if (selectedPost) {
+      setPostData({
+        body: selectedPost.body,
+        title: selectedPost.title,
+      })
+    }
+  }, [selectedPost])
+
+  const handleUpdatePost = () => {
+    if (selectedPost && postData.title.trim() && postData.body.trim()) {
+      updatePostMutate({
+        ...selectedPost,
+        body: postData.body,
+        title: postData.title,
+      })
+      close()
+    }
+  }
+
+  const handleClose = () => {
+    setPostData({ body: "", title: "" })
+    close()
+  }
+
+  return (
+    <Dialog onOpenChange={handleClose} open={isOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>게시물 수정</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <Input
+            onChange={(e) => setPostData({ ...postData, title: e.target.value })}
+            placeholder="제목"
+            value={postData.title}
+          />
+          <Textarea
+            onChange={(e) => setPostData({ ...postData, body: e.target.value })}
+            placeholder="내용"
+            rows={15}
+            value={postData.body}
+          />
+          <Button onClick={handleUpdatePost}>게시물 업데이트</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
