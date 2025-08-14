@@ -6,19 +6,33 @@ import { UserSummary } from "@/feature/get-users-summary"
 import { usePostsQuery } from "@/feature/post-query/model/usePostsQuery"
 import { highlightText } from "@/shared/lib"
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui"
+import { useEditPostModal } from "@/widgets/edit-post-modal"
+import { usePostDetailModal } from "@/widgets/post-detail-modal"
+import { useUserProfileModal } from "@/widgets/user-profile-modal"
 
-import { PostWithUserSummary } from "../model/types"
+import { usePostsWithUserSummaryQuery } from "../api/queries"
 
-interface PostsTableProps {
-  onEditPost: (post: Post) => void
-  onPostDetail: (post: Post) => void
-  onUserClick: (user: UserSummary) => void
-  posts: PostWithUserSummary[]
-}
-
-export const PostsTable = ({ onEditPost, onPostDetail, onUserClick, posts }: PostsTableProps) => {
+export const PostsTable = () => {
   const { current, updateQuery } = usePostsQuery()
   const { mutate: deletePostMutate } = useDeletePostMutation()
+  const { data: postsWithUsers, isLoading } = usePostsWithUserSummaryQuery()
+
+  const editPostModal = useEditPostModal()
+  const postDetailModal = usePostDetailModal()
+  const userProfileModal = useUserProfileModal()
+
+  // 모달 핸들러들
+  const openPostDetail = (post: Post) => {
+    postDetailModal.open(post)
+  }
+
+  const handleOpenUserProfile = (user: UserSummary) => {
+    userProfileModal.open(user)
+  }
+
+  const handleEditPost = (post: Post) => {
+    editPostModal.open(post)
+  }
 
   const handleDeletePost = (id: number) => {
     try {
@@ -26,6 +40,10 @@ export const PostsTable = ({ onEditPost, onPostDetail, onUserClick, posts }: Pos
     } catch (error) {
       console.error("게시물 삭제 오류:", error)
     }
+  }
+
+  if (isLoading) {
+    return <div className="flex justify-center p-4">로딩 중...</div>
   }
 
   return (
@@ -40,7 +58,7 @@ export const PostsTable = ({ onEditPost, onPostDetail, onUserClick, posts }: Pos
         </TableRow>
       </TableHeader>
       <TableBody>
-        {posts.map((post) => (
+        {postsWithUsers?.posts.map((post) => (
           <TableRow key={post.id}>
             <TableCell>{post.id}</TableCell>
             <TableCell>
@@ -66,7 +84,7 @@ export const PostsTable = ({ onEditPost, onPostDetail, onUserClick, posts }: Pos
             <TableCell>
               <div
                 className="flex items-center space-x-2 cursor-pointer"
-                onClick={() => post.author && onUserClick(post.author)}
+                onClick={() => post.author && handleOpenUserProfile(post.author)}
               >
                 <img alt={post.author?.username} className="w-8 h-8 rounded-full" src={post.author?.image} />
                 <span>{post.author?.username}</span>
@@ -82,10 +100,10 @@ export const PostsTable = ({ onEditPost, onPostDetail, onUserClick, posts }: Pos
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-2">
-                <Button aria-label="댓글 보기" onClick={() => onPostDetail(post)} size="sm" variant="ghost">
+                <Button aria-label="댓글 보기" onClick={() => openPostDetail(post)} size="sm" variant="ghost">
                   <MessageSquare className="w-4 h-4" />
                 </Button>
-                <Button aria-label="게시물 수정" onClick={() => onEditPost(post)} size="sm" variant="ghost">
+                <Button aria-label="게시물 수정" onClick={() => handleEditPost(post)} size="sm" variant="ghost">
                   <Edit2 className="w-4 h-4" />
                 </Button>
                 <Button aria-label="게시물 삭제" onClick={() => handleDeletePost(post.id)} size="sm" variant="ghost">

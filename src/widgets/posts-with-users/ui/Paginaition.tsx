@@ -1,10 +1,11 @@
 import { usePostsQuery } from "@/feature/post-query"
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui"
 
-import { PostWithUserSummaryReseponse } from "../model/types"
+import { usePostsWithUserSummaryQuery } from "../api/queries"
 
-export const Pagination = ({ postsWithUsers }: { postsWithUsers: PostWithUserSummaryReseponse }) => {
+export const Pagination = () => {
   const { current, updateQuery } = usePostsQuery()
+  const { data: postsWithUsers } = usePostsWithUserSummaryQuery()
 
   return (
     <div className="flex justify-between items-center">
@@ -30,7 +31,7 @@ export const Pagination = ({ postsWithUsers }: { postsWithUsers: PostWithUserSum
           이전
         </Button>
         <Button
-          disabled={current.skip + current.limit >= postsWithUsers.total}
+          disabled={current.skip + current.limit >= (postsWithUsers?.total || 0)}
           onClick={() => updateQuery({ skip: current.skip + current.limit })}
         >
           다음
