@@ -1,10 +1,10 @@
-import { usePostsFilter } from "@/feature/filter-posts"
+import { usePostsQuery } from "@/feature/post-query"
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui"
 
 import { PostWithUserSummaryReseponse } from "../model/types"
 
 export const Pagination = ({ postsWithUsers }: { postsWithUsers: PostWithUserSummaryReseponse }) => {
-  const { current, updateQuery } = usePostsFilter()
+  const { current, updateQuery } = usePostsQuery()
 
   return (
     <div className="flex justify-between items-center">

@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom"
 
 import { PostQueryParams } from "@/entities/post/model/types"
 
-export const usePostsFilter = () => {
+export const usePostsQuery = () => {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const current = useMemo(

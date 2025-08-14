@@ -1,4 +1,4 @@
-import { usePostsFilter } from "@/feature/filter-posts"
+import { usePostsQuery } from "@/feature/post-query"
 import { highlightText } from "@/shared/lib"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui"
 
@@ -7,7 +7,7 @@ import { PostComments } from "./PostComments"
 
 export const DetailPostModal = () => {
   const { close, data: selectedPost, isOpen } = usePostDetailModal()
-  const { current } = usePostsFilter()
+  const { current } = usePostsQuery()
 
   return (
     <Dialog onOpenChange={close} open={isOpen}>

@@ -3,9 +3,9 @@ import { useEffect, useState } from "react"
 
 import { Post, PostQueryParams } from "@/entities/post"
 import { Tag } from "@/entities/tag"
-import { usePostsFilter } from "@/feature/filter-posts/model/usePostsFilter"
 import { useGetTags } from "@/feature/get-tags"
 import { UserSummary } from "@/feature/get-users-summary"
+import { usePostsQuery } from "@/feature/post-query/model/usePostsQuery"
 import { useDebounceValue } from "@/shared/hooks/useDebounceValue"
 import {
   Button,
@@ -30,7 +30,7 @@ import { Pagination } from "@/widgets/posts-with-users/ui/Paginaition"
 import { UserProfileModal, useUserProfileModal } from "@/widgets/user-profile-modal"
 
 export const PostsManagerPage = () => {
-  const { current, updateQuery } = usePostsFilter()
+  const { current, updateQuery } = usePostsQuery()
 
   const addPostModal = useAddPostModal()
   const editPostModal = useEditPostModal()

@@ -2,8 +2,8 @@ import { Edit2, MessageSquare, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react
 
 import { Post } from "@/entities/post"
 import { useDeletePostMutation } from "@/feature/delete-post"
-import { usePostsFilter } from "@/feature/filter-posts/model/usePostsFilter"
 import { UserSummary } from "@/feature/get-users-summary"
+import { usePostsQuery } from "@/feature/post-query/model/usePostsQuery"
 import { highlightText } from "@/shared/lib"
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui"
 
@@ -17,7 +17,7 @@ interface PostsTableProps {
 }
 
 export const PostsTable = ({ onEditPost, onPostDetail, onUserClick, posts }: PostsTableProps) => {
-  const { current, updateQuery } = usePostsFilter()
+  const { current, updateQuery } = usePostsQuery()
   const { mutate: deletePostMutate } = useDeletePostMutation()
 
   const handleDeletePost = (id: number) => {

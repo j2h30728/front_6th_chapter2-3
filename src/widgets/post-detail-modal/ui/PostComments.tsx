@@ -3,8 +3,8 @@ import { Edit2, Plus, ThumbsUp, Trash2 } from "lucide-react"
 import { Comment } from "@/entities/comment"
 import { useCommentLikeMutation } from "@/feature/comment-like"
 import { useDeleteCommentMutation } from "@/feature/delete-comment"
-import { usePostsFilter } from "@/feature/filter-posts"
 import { useGetComments } from "@/feature/get-comments"
+import { usePostsQuery } from "@/feature/post-query"
 import { highlightText } from "@/shared/lib"
 import { Button } from "@/shared/ui"
 import { useAddCommentModal } from "@/widgets/add-comment-modal"
@@ -16,7 +16,7 @@ interface PostCommentsProps {
 
 export const PostComments = ({ postId }: PostCommentsProps) => {
   const { data: comments } = useGetComments(postId)
-  const { current } = usePostsFilter()
+  const { current } = usePostsQuery()
 
   const addCommentModal = useAddCommentModal()
   const editCommentModal = useEditCommentModal()
