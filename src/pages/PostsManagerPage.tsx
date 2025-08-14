@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Comment } from "@/entities/comment"
 import { Post, PostQueryParams } from "@/entities/post"
 import { Tag } from "@/entities/tag"
-import { User, userApi } from "@/entities/user"
+import { User } from "@/entities/user"
 import { useAddCommentMutation } from "@/feature/add-comment"
 import { useAddPostMutation } from "@/feature/add-post"
 import { useCommentLikeMutation } from "@/feature/comment-like"
@@ -13,6 +13,7 @@ import { useDeletePostMutation } from "@/feature/delete-post"
 import { usePostsFilter } from "@/feature/filter-posts/model/usePostsFilter"
 import { useGetComments } from "@/feature/get-comments"
 import { useGetTags } from "@/feature/get-tags"
+import { useGetUserById } from "@/feature/get-user-by-id"
 import { UserSummary } from "@/feature/get-users-summary"
 import { useUpdateCommentMutation } from "@/feature/update-comment"
 import { useUpdatePostMutation } from "@/feature/update-post"
@@ -81,7 +82,7 @@ export const PostsManagerPage = () => {
   // 모달 상태
   const [showPostDetailDialog, setShowPostDetailDialog] = useState(false) // 게시물 상세 보기 모달 상태
   const [showUserModal, setShowUserModal] = useState(false) // 사용자 정보 모달 상태
-  const [selectedUser, setSelectedUser] = useState<null | User>(null) // 선택된 사용자 상태 (모달 정보)
+  const [selectedUser, setSelectedUser] = useState<User>() // 선택된 사용자 상태 (모달 정보)
 
   const { data: postsWithUsers, isLoading, refetch } = usePostsWithUserSummaryQuery()
 
@@ -177,11 +178,12 @@ export const PostsManagerPage = () => {
     setShowPostDetailDialog(true)
   }
 
+  const { data: userData } = useGetUserById(selectedUser?.id)
+
   // 사용자 모달 열기
   const openUserModal = async (user: UserSummary) => {
     try {
-      const userData: User = await userApi.getById(user.id)
-      setSelectedUser(userData)
+      setSelectedUser(user)
       setShowUserModal(true)
     } catch (error) {
       console.error("사용자 정보 가져오기 오류:", error)
@@ -558,27 +560,27 @@ export const PostsManagerPage = () => {
             <DialogTitle>사용자 정보</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <img alt={selectedUser?.username} className="w-24 h-24 rounded-full mx-auto" src={selectedUser?.image} />
-            <h3 className="text-xl font-semibold text-center">{selectedUser?.username}</h3>
+            <img alt={userData?.username} className="w-24 h-24 rounded-full mx-auto" src={userData?.image} />
+            <h3 className="text-xl font-semibold text-center">{userData?.username}</h3>
             <div className="space-y-2">
               <p>
-                <strong>이름:</strong> {selectedUser?.firstName} {selectedUser?.lastName}
+                <strong>이름:</strong> {userData?.firstName} {userData?.lastName}
               </p>
               <p>
-                <strong>나이:</strong> {selectedUser?.age}
+                <strong>나이:</strong> {userData?.age}
               </p>
               <p>
-                <strong>이메일:</strong> {selectedUser?.email}
+                <strong>이메일:</strong> {userData?.email}
               </p>
               <p>
-                <strong>전화번호:</strong> {selectedUser?.phone}
+                <strong>전화번호:</strong> {userData?.phone}
               </p>
               <p>
-                <strong>주소:</strong> {selectedUser?.address?.address}, {selectedUser?.address?.city},{" "}
-                {selectedUser?.address?.state}
+                <strong>주소:</strong> {userData?.address?.address}, {userData?.address?.city},{" "}
+                {userData?.address?.state}
               </p>
               <p>
-                <strong>직장:</strong> {selectedUser?.company?.name} - {selectedUser?.company?.title}
+                <strong>직장:</strong> {userData?.company?.name} - {userData?.company?.title}
               </p>
             </div>
           </div>
