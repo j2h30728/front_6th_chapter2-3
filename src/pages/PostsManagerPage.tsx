@@ -1,5 +1,5 @@
 import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { Comment } from "@/entities/comment"
 import { Post, PostQueryParams } from "@/entities/post"
@@ -17,6 +17,7 @@ import { useGetUserById } from "@/feature/get-user-by-id"
 import { UserSummary } from "@/feature/get-users-summary"
 import { useUpdateCommentMutation } from "@/feature/update-comment"
 import { useUpdatePostMutation } from "@/feature/update-post"
+import { useDebounceValue } from "@/shared/hooks/useDebounceValue"
 import { highlightText } from "@/shared/lib"
 import {
   Button,
@@ -84,17 +85,10 @@ export const PostsManagerPage = () => {
   const [showUserModal, setShowUserModal] = useState(false) // 사용자 정보 모달 상태
   const [selectedUser, setSelectedUser] = useState<User>() // 선택된 사용자 상태 (모달 정보)
 
-  const { data: postsWithUsers, isLoading, refetch } = usePostsWithUserSummaryQuery()
+  const { data: postsWithUsers, isLoading } = usePostsWithUserSummaryQuery()
 
   const { data: tagsData } = useGetTags()
 
-  // 게시물 검색
-  const searchPosts = async () => {
-    if (!current.search) {
-      refetch()
-      return
-    }
-  }
   const { mutate: addPostMuate } = useAddPostMutation()
   // 게시물 추가
 
@@ -320,6 +314,26 @@ export const PostsManagerPage = () => {
       </div>
     </div>
   )
+  const [inputValue, setInputValue] = useState(current.search || "")
+  const debouncedSearchQuery = useDebounceValue(inputValue, 500)
+
+  useEffect(() => {
+    updateQuery({ search: debouncedSearchQuery })
+  }, [debouncedSearchQuery, updateQuery])
+
+  useEffect(() => {
+    setInputValue(current.search || "")
+  }, [current.search])
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value)
+  }
+
+  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      updateQuery({ search: inputValue })
+    }
+  }
 
   return (
     <Card className="w-full max-w-6xl mx-auto">
@@ -342,10 +356,10 @@ export const PostsManagerPage = () => {
                 <Input
                   aria-label="게시물 검색"
                   className="pl-8"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateQuery({ search: e.target.value })}
-                  onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && searchPosts()}
+                  onChange={handleSearchChange}
+                  onKeyPress={handleSearchKeyPress}
                   placeholder="게시물 검색..."
-                  value={current.search}
+                  value={inputValue}
                 />
               </div>
             </div>
