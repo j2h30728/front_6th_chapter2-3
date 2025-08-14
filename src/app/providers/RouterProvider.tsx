@@ -6,5 +6,7 @@ interface RouterProviderProps {
 }
 
 export const RouterProvider = ({ children }: RouterProviderProps) => {
-  return <BrowserRouter>{children}</BrowserRouter>
+  const basename = import.meta.env.PROD ? "/front_6th_chapter2-3" : ""
+
+  return <BrowserRouter basename={basename}>{children}</BrowserRouter>
 }

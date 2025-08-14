@@ -1,7 +1,9 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
 
+const API_BASE_URL = import.meta.env.PROD ? "https://dummyjson.com" : "/api"
+
 export const axiosInstance = axios.create({
-  baseURL: "/api",
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
