@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react"
 
+import { Comment } from "@/entities/comment"
 import { useUpdateCommentMutation } from "@/feature/update-comment"
+import { useModal } from "@/shared/hooks/useModal"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "@/shared/ui"
 
-import { useEditCommentModal } from "../model/useEditCommentModal"
+interface Props {
+  modalId: string
+}
 
-export const EditCommentModal = () => {
-  const { close, data: selectedComment, isOpen } = useEditCommentModal()
+export const UpdateCommentModal = ({ modalId }: Props) => {
+  const { close, data: selectedComment, isOpen } = useModal<Comment>(modalId)
   const { mutate: updateCommentMutate } = useUpdateCommentMutation()
   const [commentBody, setCommentBody] = useState("")
 
-  // 모달이 열릴 때 기존 댓글 내용 설정
   useEffect(() => {
     if (selectedComment) {
       setCommentBody(selectedComment.body)

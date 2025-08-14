@@ -1,10 +1,14 @@
 import { useGetUserById } from "@/feature/get-user-by-id"
+import { UserSummary } from "@/feature/get-users-summary"
+import { useModal } from "@/shared/hooks/useModal"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui"
 
-import { useUserProfileModal } from "../model/useUserProfileModal"
+interface Props {
+  modalId: string
+}
 
-export const UserProfileModal = () => {
-  const { close, data: selectedUser, isOpen } = useUserProfileModal()
+export const UserProfileModal = ({ modalId }: Props) => {
+  const { close, data: selectedUser, isOpen } = useModal<UserSummary>(modalId)
   const { data: userData } = useGetUserById(selectedUser?.id)
 
   return (

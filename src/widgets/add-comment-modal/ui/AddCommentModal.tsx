@@ -1,12 +1,15 @@
 import { useState } from "react"
 
 import { useAddCommentMutation } from "@/feature/add-comment"
+import { useModal } from "@/shared/hooks/useModal"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "@/shared/ui"
 
-import { useAddCommentModal } from "../model/useAddCommentModal"
+interface Props {
+  modalId: string
+}
 
-export const AddCommentModal = () => {
-  const { close, data, isOpen } = useAddCommentModal()
+export const AddCommentModal = ({ modalId }: Props) => {
+  const { close, data, isOpen } = useModal<{ postId: number }>(modalId)
   const { mutate: addCommentMutate } = useAddCommentMutation()
   const [commentBody, setCommentBody] = useState("")
 
@@ -29,7 +32,7 @@ export const AddCommentModal = () => {
 
   return (
     <Dialog onOpenChange={handleClose} open={isOpen}>
-      <DialogContent>
+      <DialogContent aria-label="새 댓글 추가">
         <DialogHeader>
           <DialogTitle>새 댓글 추가</DialogTitle>
         </DialogHeader>

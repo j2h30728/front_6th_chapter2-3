@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react"
 
+import { Post } from "@/entities/post"
 import { useUpdatePostMutation } from "@/feature/update-post"
+import { useModal } from "@/shared/hooks/useModal"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "@/shared/ui"
 
-import { useEditPostModal } from "../model/useEditPostModal"
+interface UpdatePostModalProps {
+  modalId: string
+}
 
-export const EditPostModal = () => {
-  const { close, data: selectedPost, isOpen } = useEditPostModal()
+export const UpdatePostModal = ({ modalId }: UpdatePostModalProps) => {
+  const { close, data: selectedPost, isOpen } = useModal<Post>(modalId)
   const { mutate: updatePostMutate } = useUpdatePostMutation()
 
   const [postData, setPostData] = useState({
@@ -41,7 +45,7 @@ export const EditPostModal = () => {
 
   return (
     <Dialog onOpenChange={handleClose} open={isOpen}>
-      <DialogContent>
+      <DialogContent aria-label="게시물 수정">
         <DialogHeader>
           <DialogTitle>게시물 수정</DialogTitle>
         </DialogHeader>

@@ -1,2 +1,3 @@
-export { useAddCommentModal } from "./model/useAddCommentModal"
-export { AddCommentModal } from "./ui/AddCommentModal"
+export * from "./model/useAddCommentModal"
+export * from "./ui/AddCommentButton"
+export * from "./ui/AddCommentModal"

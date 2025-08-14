@@ -1,4 +1,4 @@
-import { Edit2, Plus, ThumbsUp, Trash2 } from "lucide-react"
+import { ThumbsUp, Trash2 } from "lucide-react"
 
 import { Comment } from "@/entities/comment"
 import { useCommentLikeMutation } from "@/feature/comment-like"
@@ -7,8 +7,8 @@ import { useGetComments } from "@/feature/get-comments"
 import { usePostsQuery } from "@/feature/post-query"
 import { highlightText } from "@/shared/lib"
 import { Button } from "@/shared/ui"
-import { useAddCommentModal } from "@/widgets/add-comment-modal"
-import { useEditCommentModal } from "@/widgets/edit-comment-modal"
+import { AddCommentButton } from "@/widgets/add-comment-modal"
+import { UpdateCommentButton } from "@/widgets/edit-comment-modal"
 
 interface PostCommentsProps {
   postId: number
@@ -18,19 +18,8 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
   const { data: comments } = useGetComments(postId)
   const { current } = usePostsQuery()
 
-  const addCommentModal = useAddCommentModal()
-  const editCommentModal = useEditCommentModal()
-
   const commentLikes = useCommentLikeMutation()
   const { mutate: deleteCommentMutate } = useDeleteCommentMutation()
-
-  const handleAddComment = () => {
-    addCommentModal.open({ postId })
-  }
-
-  const handleEditComment = (comment: Comment) => {
-    editCommentModal.open(comment)
-  }
 
   const handleLikeComment = (comment: Comment) => {
     commentLikes.mutate(comment)
@@ -44,10 +33,7 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
     <div className="mt-2">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold">댓글</h3>
-        <Button onClick={handleAddComment} size="sm">
-          <Plus className="w-3 h-3 mr-1" />
-          댓글 추가
-        </Button>
+        <AddCommentButton postId={postId} />
       </div>
 
       <div className="space-y-1">
@@ -62,9 +48,7 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
                 <ThumbsUp className="w-3 h-3" />
                 <span className="ml-1 text-xs">{comment.likes}</span>
               </Button>
-              <Button aria-label="댓글 수정" onClick={() => handleEditComment(comment)} size="sm" variant="ghost">
-                <Edit2 className="w-3 h-3" />
-              </Button>
+              <UpdateCommentButton comment={comment} />
               <Button aria-label="댓글 삭제" onClick={() => handleDeleteComment(comment.id)} size="sm" variant="ghost">
                 <Trash2 className="w-3 h-3" />
               </Button>

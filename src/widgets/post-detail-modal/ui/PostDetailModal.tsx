@@ -1,12 +1,17 @@
+import { Post } from "@/entities/post"
 import { usePostsQuery } from "@/feature/post-query"
+import { useModal } from "@/shared/hooks/useModal"
 import { highlightText } from "@/shared/lib"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui"
 
-import { usePostDetailModal } from "../model/usePostDetailModal"
 import { PostComments } from "./PostComments"
 
-export const DetailPostModal = () => {
-  const { close, data: selectedPost, isOpen } = usePostDetailModal()
+interface Props {
+  modalId: string
+}
+
+export const DetailPostModal = ({ modalId }: Props) => {
+  const { close, data: selectedPost, isOpen } = useModal<Post>(modalId)
   const { current } = usePostsQuery()
 
   return (

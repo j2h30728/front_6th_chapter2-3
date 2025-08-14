@@ -1,9 +1,8 @@
 import { useState } from "react"
 
 import { useAddPostMutation } from "@/feature/add-post"
+import { useAddPostModal } from "@/feature/add-post/model/useAddPostModal"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "@/shared/ui"
-
-import { useAddPostModal } from "../model/useAddPostModal"
 
 export const AddPostModal = () => {
   const { close, isOpen } = useAddPostModal()
@@ -30,7 +29,7 @@ export const AddPostModal = () => {
 
   return (
     <Dialog onOpenChange={handleClose} open={isOpen}>
-      <DialogContent>
+      <DialogContent aria-label="새 게시물 추가">
         <DialogHeader>
           <DialogTitle>새 게시물 추가</DialogTitle>
         </DialogHeader>
