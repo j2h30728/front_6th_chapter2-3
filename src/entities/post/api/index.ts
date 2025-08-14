@@ -1,6 +1,5 @@
-import type { Post, PostQueryParams, SearchQueryParams } from "@/entities/post/model/types"
+import type { Post, PostQueryParams, PostsResponse, SearchQueryParams } from "@/entities/post/model/types"
 
-import { PaginationResponse } from "@/shared/api"
 import { apiClient } from "@/shared/api/apiClient"
 
 export const postApi = {
@@ -11,13 +10,13 @@ export const postApi = {
     return apiClient.delete<Post>(`/posts/${postId}`)
   },
   async getAll(params: Partial<PostQueryParams>) {
-    return apiClient.get<PaginationResponse<Post>>("/posts", { params })
+    return apiClient.get<PostsResponse>("/posts", { params })
   },
   async getAllByTag(tag: string) {
-    return apiClient.get<PaginationResponse<Post>>(`/posts/tag/${tag}`)
+    return apiClient.get<PostsResponse>(`/posts/tag/${tag}`)
   },
   async search(params: SearchQueryParams) {
-    return apiClient.get<PaginationResponse<Post>>("/posts/search", { params })
+    return apiClient.get<PostsResponse>("/posts/search", { params })
   },
   async update(post: Post) {
     return apiClient.put<Post>(`/posts/${post.id}`, post)

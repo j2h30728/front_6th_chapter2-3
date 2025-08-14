@@ -15,6 +15,8 @@ export interface PostQueryParams {
   sortBy: "" | "id" | "none" | "reactions" | "title"
 }
 
+export type PostsResponse = { limit: number; posts: Post[]; skip: number; total: number }
+
 export interface SearchQueryParams {
   q?: string
 }
