@@ -1,1 +1,1 @@
-export * from "./PostsManagerPage"
+export * from "./post-manager-page/ui/PostsManagerPage"
