@@ -1,12 +1,12 @@
 import { ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
 
 import { useDeletePostMutation } from "@/feature/delete-post"
+import { UserProfileButton } from "@/feature/get-users-summary/ui/UserProfileButton"
 import { usePostsQuery } from "@/feature/post-query/model/usePostsQuery"
 import { UpdatePostButton } from "@/feature/update-post"
 import { highlightText } from "@/shared/lib"
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui"
 import { PostDetailButton } from "@/widgets/post-detail-modal"
-import { UserProfileButton } from "@/widgets/user-profile-modal"
 
 import { usePostsWithUserSummaryQuery } from "../api/queries"
 

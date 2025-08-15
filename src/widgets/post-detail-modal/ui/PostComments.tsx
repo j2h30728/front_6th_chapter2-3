@@ -1,14 +1,14 @@
 import { ThumbsUp, Trash2 } from "lucide-react"
 
 import { Comment } from "@/entities/comment"
+import { AddCommentButton } from "@/feature/add-comment"
 import { useCommentLikeMutation } from "@/feature/comment-like"
 import { useDeleteCommentMutation } from "@/feature/delete-comment"
 import { useGetComments } from "@/feature/get-comments"
 import { usePostsQuery } from "@/feature/post-query"
+import { UpdateCommentButton } from "@/feature/update-comment/ui/UpdateCommentButton"
 import { highlightText } from "@/shared/lib"
 import { Button } from "@/shared/ui"
-import { AddCommentButton } from "@/widgets/add-comment-modal"
-import { UpdateCommentButton } from "@/widgets/update-comment-modal"
 
 interface PostCommentsProps {
   postId: number
