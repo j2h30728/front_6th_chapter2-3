@@ -5,7 +5,7 @@ import type { Comment } from "@/entities/comment"
 import { commentApi } from "@/entities/comment"
 import { CommentResponse } from "@/entities/comment/model/types"
 
-export const useCommentLikeMutation = () => {
+export const useUpdateCommentLikeMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({

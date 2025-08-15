@@ -1,4 +1,5 @@
-import { Post, PostPagiantionReponse } from "@/entities/post"
+import { Post } from "@/entities/post"
+import { PostPagiantionReponse } from "@/entities/post/model/types"
 import { UserSummary } from "@/feature/get-users-summary"
 
 export interface PostWithUserSummary extends Post {

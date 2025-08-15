@@ -2,10 +2,10 @@ import { ThumbsUp, Trash2 } from "lucide-react"
 
 import { Comment } from "@/entities/comment"
 import { AddCommentButton } from "@/feature/add-comment"
-import { useCommentLikeMutation } from "@/feature/comment-like"
 import { useDeleteCommentMutation } from "@/feature/delete-comment"
 import { useGetComments } from "@/feature/get-comments"
 import { usePostsQuery } from "@/feature/post-query"
+import { useUpdateCommentLikeMutation } from "@/feature/update-comment-like"
 import { UpdateCommentButton } from "@/feature/update-comment/ui/UpdateCommentButton"
 import { highlightText } from "@/shared"
 import { Button } from "@/shared/ui"
@@ -18,7 +18,7 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
   const { data: comments } = useGetComments(postId)
   const { current } = usePostsQuery()
 
-  const commentLikes = useCommentLikeMutation()
+  const commentLikes = useUpdateCommentLikeMutation()
   const { isError, isPending, mutate: deleteCommentMutate } = useDeleteCommentMutation()
 
   const handleLikeComment = (comment: Comment) => {
