@@ -3,7 +3,7 @@ export * from "./Card"
 export * from "./Dialog"
 export * from "./Input"
 export * from "./layouts/MainLayout"
+export * from "./Loader"
 export * from "./Select"
 export * from "./Table"
-
 export * from "./TextArea"

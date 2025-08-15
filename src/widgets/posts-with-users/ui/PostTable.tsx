@@ -4,7 +4,7 @@ import { useDeletePostMutation } from "@/feature/delete-post"
 import { UserProfileButton } from "@/feature/get-users-summary/ui/UserProfileButton"
 import { usePostsQuery } from "@/feature/post-query/model/usePostsQuery"
 import { UpdatePostButton } from "@/feature/update-post"
-import { highlightText } from "@/shared/lib"
+import { highlightText } from "@/shared"
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui"
 import { PostDetailButton } from "@/widgets/post-detail-modal"
 

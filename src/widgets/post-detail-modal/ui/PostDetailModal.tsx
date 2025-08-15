@@ -1,7 +1,7 @@
 import { Post } from "@/entities/post"
 import { usePostsQuery } from "@/feature/post-query"
+import { highlightText } from "@/shared"
 import { useModal } from "@/shared/hooks/useModal"
-import { highlightText } from "@/shared/lib"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui"
 
 import { PostComments } from "./PostComments"

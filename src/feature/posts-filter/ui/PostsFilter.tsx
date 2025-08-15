@@ -5,6 +5,7 @@ import { PostQueryParams } from "@/entities/post"
 import { Tag } from "@/entities/tag"
 import { useGetTags } from "@/feature/get-tags"
 import { usePostsQuery } from "@/feature/post-query/model/usePostsQuery"
+import { DEBOUNCE_DELAY_TIME } from "@/shared"
 import { useDebounceValue } from "@/shared/hooks/useDebounceValue"
 import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui"
 
@@ -13,7 +14,7 @@ export const PostsFilter = () => {
   const { data: tagsData } = useGetTags()
 
   const [inputValue, setInputValue] = useState(current.search || "")
-  const debouncedSearchQuery = useDebounceValue(inputValue, 500)
+  const debouncedSearchQuery = useDebounceValue(inputValue, DEBOUNCE_DELAY_TIME)
 
   useEffect(() => {
     updateQuery({ search: debouncedSearchQuery })
@@ -35,7 +36,6 @@ export const PostsFilter = () => {
 
   return (
     <div className="flex gap-4">
-      {/* 검색 입력 */}
       <div className="flex-1">
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />

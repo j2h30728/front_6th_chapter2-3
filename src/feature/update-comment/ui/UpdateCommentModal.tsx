@@ -11,7 +11,7 @@ interface Props {
 
 export const UpdateCommentModal = ({ modalId }: Props) => {
   const { close, data: selectedComment, isOpen } = useModal<Comment>(modalId)
-  const { mutate: updateCommentMutate } = useUpdateCommentMutation()
+  const { isError, isPending, mutate: updateCommentMutate } = useUpdateCommentMutation()
   const [commentBody, setCommentBody] = useState("")
 
   useEffect(() => {
@@ -43,8 +43,11 @@ export const UpdateCommentModal = ({ modalId }: Props) => {
         </DialogHeader>
         <div className="space-y-4">
           <Textarea onChange={(e) => setCommentBody(e.target.value)} placeholder="댓글 내용" value={commentBody} />
-          <Button onClick={handleUpdateComment}>댓글 업데이트</Button>
+          <Button disabled={isPending} onClick={handleUpdateComment}>
+            댓글 업데이트
+          </Button>
         </div>
+        {isError && <div className="text-red-500">댓글 수정에 실패했습니다.</div>}
       </DialogContent>
     </Dialog>
   )

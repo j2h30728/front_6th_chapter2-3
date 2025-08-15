@@ -5,7 +5,11 @@ import { usePostsWithUserSummaryQuery } from "../api/queries"
 
 export const Pagination = () => {
   const { current, updateQuery } = usePostsQuery()
-  const { data: postsWithUsers } = usePostsWithUserSummaryQuery()
+  const { data: postsWithUsers, isError, isPending } = usePostsWithUserSummaryQuery()
+
+  if (isError) {
+    return <div className="text-red-500">게시물 목록 조회에 실패했습니다.</div>
+  }
 
   return (
     <div className="flex justify-between items-center">
@@ -25,13 +29,13 @@ export const Pagination = () => {
       </div>
       <div className="flex gap-2">
         <Button
-          disabled={current.skip === 0}
+          disabled={current.skip === 0 || isPending}
           onClick={() => updateQuery({ skip: Math.max(0, current.skip - current.limit) })}
         >
           이전
         </Button>
         <Button
-          disabled={current.skip + current.limit >= (postsWithUsers?.total || 0)}
+          disabled={current.skip + current.limit >= (postsWithUsers?.total || 0) || isPending}
           onClick={() => updateQuery({ skip: current.skip + current.limit })}
         >
           다음

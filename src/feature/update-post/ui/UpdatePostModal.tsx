@@ -11,7 +11,7 @@ interface UpdatePostModalProps {
 
 export const UpdatePostModal = ({ modalId }: UpdatePostModalProps) => {
   const { close, data: selectedPost, isOpen } = useModal<Post>(modalId)
-  const { mutate: updatePostMutate } = useUpdatePostMutation()
+  const { isError, isPending, mutate: updatePostMutate } = useUpdatePostMutation()
 
   const [postData, setPostData] = useState({
     body: "",
@@ -61,8 +61,11 @@ export const UpdatePostModal = ({ modalId }: UpdatePostModalProps) => {
             rows={15}
             value={postData.body}
           />
-          <Button onClick={handleUpdatePost}>게시물 업데이트</Button>
+          <Button disabled={isPending} onClick={handleUpdatePost}>
+            게시물 업데이트
+          </Button>
         </div>
+        {isError && <div className="text-red-500">게시물 수정에 실패했습니다.</div>}
       </DialogContent>
     </Dialog>
   )

@@ -10,7 +10,7 @@ interface Props {
 
 export const AddCommentModal = ({ modalId }: Props) => {
   const { close, data, isOpen } = useModal<{ postId: number }>(modalId)
-  const { mutate: addCommentMutate } = useAddCommentMutation()
+  const { isError, mutate: addCommentMutate } = useAddCommentMutation()
   const [commentBody, setCommentBody] = useState("")
 
   const handleAddComment = () => {
@@ -40,6 +40,7 @@ export const AddCommentModal = ({ modalId }: Props) => {
           <Textarea onChange={(e) => setCommentBody(e.target.value)} placeholder="댓글 내용" value={commentBody} />
           <Button onClick={handleAddComment}>댓글 추가</Button>
         </div>
+        {isError && <div className="text-red-500">댓글 추가에 실패했습니다.</div>}
       </DialogContent>
     </Dialog>
   )

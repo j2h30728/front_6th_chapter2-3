@@ -7,7 +7,7 @@ import { useDeleteCommentMutation } from "@/feature/delete-comment"
 import { useGetComments } from "@/feature/get-comments"
 import { usePostsQuery } from "@/feature/post-query"
 import { UpdateCommentButton } from "@/feature/update-comment/ui/UpdateCommentButton"
-import { highlightText } from "@/shared/lib"
+import { highlightText } from "@/shared"
 import { Button } from "@/shared/ui"
 
 interface PostCommentsProps {
@@ -19,7 +19,7 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
   const { current } = usePostsQuery()
 
   const commentLikes = useCommentLikeMutation()
-  const { mutate: deleteCommentMutate } = useDeleteCommentMutation()
+  const { isError, isPending, mutate: deleteCommentMutate } = useDeleteCommentMutation()
 
   const handleLikeComment = (comment: Comment) => {
     commentLikes.mutate(comment)
@@ -27,6 +27,10 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
 
   const handleDeleteComment = (commentId: number) => {
     deleteCommentMutate(commentId)
+  }
+
+  if (isError) {
+    return <div className="text-red-500">댓글 삭제에 실패했습니다.</div>
   }
 
   return (
@@ -44,12 +48,24 @@ export const PostComments = ({ postId }: PostCommentsProps) => {
               <span className="truncate">{highlightText(comment.body, current.search)}</span>
             </div>
             <div className="flex items-center space-x-1">
-              <Button aria-label="댓글 좋아요" onClick={() => handleLikeComment(comment)} size="sm" variant="ghost">
+              <Button
+                aria-label="댓글 좋아요"
+                disabled={isPending}
+                onClick={() => handleLikeComment(comment)}
+                size="sm"
+                variant="ghost"
+              >
                 <ThumbsUp className="w-3 h-3" />
                 <span className="ml-1 text-xs">{comment.likes}</span>
               </Button>
               <UpdateCommentButton comment={comment} />
-              <Button aria-label="댓글 삭제" onClick={() => handleDeleteComment(comment.id)} size="sm" variant="ghost">
+              <Button
+                aria-label="댓글 삭제"
+                disabled={isPending}
+                onClick={() => handleDeleteComment(comment.id)}
+                size="sm"
+                variant="ghost"
+              >
                 <Trash2 className="w-3 h-3" />
               </Button>
             </div>
