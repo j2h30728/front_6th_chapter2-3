@@ -1,6 +1,6 @@
 export type AddCommentResponse = Omit<Comment, "likes">
 
-export type Comment = {
+export interface Comment {
   body: string
   id: number
   likes: number
@@ -12,14 +12,19 @@ export type Comment = {
   }
 }
 
-export type CommentRequest = {
+export interface CommentRequest {
   body: string
   postId: null | number
   userId: number
 }
 
-export type CommentResponse = { comments: Comment[]; limit: number; skip: number; total: number }
+export interface CommentResponse {
+  comments: Comment[]
+  limit: number
+  skip: number
+  total: number
+}
 
-export type DeleteCommentResponse = Comment & {
+export interface DeleteCommentResponse extends Comment {
   isDeleted: boolean
 }

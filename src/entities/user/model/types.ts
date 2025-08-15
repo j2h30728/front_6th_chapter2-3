@@ -1,4 +1,4 @@
-export type User = {
+export interface User {
   address?: Address
   age?: number
   company?: Company
@@ -10,10 +10,26 @@ export type User = {
   phone?: string
   username?: string
 }
-export type UserQueryParams = { limit: number; select: string }
 
-export type UsersResponse = { limit: number; skip: number; total: number; users: User[] }
+export interface UserQueryParams {
+  limit: number
+  select: string
+}
 
-type Address = { address?: string; city?: string; state?: string }
+export interface UsersResponse {
+  limit: number
+  skip: number
+  total: number
+  users: User[]
+}
 
-type Company = { name?: string; title?: string }
+interface Address {
+  address?: string
+  city?: string
+  state?: string
+}
+
+interface Company {
+  name?: string
+  title?: string
+}
