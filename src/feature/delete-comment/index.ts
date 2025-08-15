@@ -1,1 +1,1 @@
-export * from "./api/queries"
+export { useDeleteCommentMutation } from "./api/queries"

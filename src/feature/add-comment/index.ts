@@ -1,3 +1,3 @@
-export * from "./api/queries"
-export * from "./ui/AddCommentButton"
-export * from "./ui/AddCommentModal"
+export { useAddCommentMutation } from "./api/queries"
+export { AddCommentButton } from "./ui/AddCommentButton"
+export { AddCommentModal } from "./ui/AddCommentModal"

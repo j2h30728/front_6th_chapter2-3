@@ -1,1 +1,1 @@
-export * from "./api"
+export { useCommentLikeMutation } from "./api"

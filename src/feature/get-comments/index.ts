@@ -1,1 +1,1 @@
-export * from "./api/queries"
+export { useGetComments } from "./api/queries"

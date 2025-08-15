@@ -1,1 +1,1 @@
-export * from "./model/usePostsQuery"
+export { usePostsQuery } from "./model/usePostsQuery"

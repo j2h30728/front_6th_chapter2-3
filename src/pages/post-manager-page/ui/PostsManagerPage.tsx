@@ -1,8 +1,7 @@
 import { AddPostButton } from "@/feature/add-post"
 import { PostsFilter } from "@/feature/posts-filter"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui"
-import { PostsTable } from "@/widgets/posts-with-users"
-import { Pagination } from "@/widgets/posts-with-users/ui/Paginaition"
+import { Pagination, PostsTable } from "@/widgets/posts-with-users"
 
 export const PostsManagerPage = () => {
   return (

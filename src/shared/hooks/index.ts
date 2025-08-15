@@ -1,1 +1,1 @@
-export * from "./useDebounceValue"
+export { useDebounceValue } from "./useDebounceValue"

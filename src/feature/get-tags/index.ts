@@ -1,1 +1,1 @@
-export * from "./api/queries"
+export { useGetTags } from "./api/queries"

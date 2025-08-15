@@ -1,3 +1,3 @@
-export * from "./api"
-export * from "./model/types"
+export { TagApi } from "./api/index"
+export type { Tag } from "./model/types"
 export { TagItem } from "./ui/Tag"

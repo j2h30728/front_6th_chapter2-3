@@ -1,1 +1,1 @@
-export * from "./api/queries"
+export { useDeletePostMutation } from "./api/queries"
