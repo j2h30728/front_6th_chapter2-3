@@ -1,4 +1,4 @@
-import { MessageSquarePlus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { PropsWithChildren } from "react"
 
 import { useModal } from "@/shared/hooks/useModal"
@@ -19,8 +19,8 @@ export const AddCommentButton = ({ children, postId }: PropsWithChildren<Props>)
 
   return (
     <>
-      <Button onClick={handleAddComment} size="sm" variant="ghost">
-        <MessageSquarePlus className="w-4 h-4 mr-2" />
+      <Button onClick={handleAddComment} size="sm">
+        <Plus className="w-3 h-3 mr-1" />
         {children || "댓글 추가"}
       </Button>
       <AddCommentModal modalId={`add-comment-${postId}`} />

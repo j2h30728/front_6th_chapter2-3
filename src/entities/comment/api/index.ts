@@ -13,7 +13,7 @@ export const commentApi = {
     return apiClient.get<CommentResponse>(`/comments/post/${postId}`)
   },
   async update(comment: Comment) {
-    return apiClient.put<Comment>(`/comments/${comment.id}`, comment)
+    return apiClient.put<Comment>(`/comments/${comment.id}`, { body: comment.body })
   },
   async updateLike(comment: Comment) {
     return apiClient.patch<Comment>(`/comments/${comment.id}`, { likes: comment.likes })
